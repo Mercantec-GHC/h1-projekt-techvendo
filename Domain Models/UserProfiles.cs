@@ -4,8 +4,10 @@
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public int BirthDate { get; set; }
+        public string BirthDate { get; set; }
         public int Reputation {  get; set; }
         public int Selling {  get; set; }
+        public string Location { get; set; }
+        public string Joined { get; set; }
     }
 }
