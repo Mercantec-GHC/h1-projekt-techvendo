@@ -94,3 +94,7 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+.content mt-0 mb-0 {
+    background-color: #000;
+}
