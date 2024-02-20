@@ -1,63 +1,76 @@
 ﻿@page "/aboutus"
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>ABOUT US</PageTitle>
 
-<h1>Weather</h1>
+<div class="row">
+    <div class="col">
+        <h1>ABOUT US</h1>
+        <p>
+            TechVendo is all about changing how tech fans trade by enabling direct peer-to-peer transactions with transparency and reliability.
 
-<p>This component demonstrates showing data.</p>
+            Our goal is to connect buyers and sellers in a trustworthy environment where everyone feels confident. Whether you're upgrading your gaming setup, improving your workstation, or clearing out old tech, TechVendo is the place to be.
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+            We care about affordability and sustainability. By giving used hardware a new life, we help reduce electronic waste and make advanced technology more accessible to everyone.
 
-@code {
-    private WeatherForecast[]? forecasts;
+            Integrity and customer satisfaction are our priorities. Our platform is user-friendly and secure, ensuring a smooth experience for all users.
+        s</p>
+    </div>
+    <div class="col">
+        <h1>SUSTAINABILITY</h1>
+        <p>
+            Reusability is essential in today's world. It's not just about reducing waste; it's about maximizing the lifespan of products and minimizing our impact on the environment.
 
-    protected override async Task OnInitializedAsync()
-    {
-        // Simulate asynchronous loading to demonstrate a loading indicator
-        await Task.Delay(500);
+            When we reuse items, we're not only saving money but also conserving resources and energy that would otherwise be spent on manufacturing new products.
 
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
-        }).ToArray();
+            Plus, reusing things often adds character and history to them, making them more valuable in a sentimental sense.
+
+            Overall, embracing reusability is a smart and responsible choice that benefits both individuals and the planet.
+        </p>
+    </div>
+    <div class="col no-border">
+        <h1>MEAT THE TEAM</h1>
+        <p>
+            Arian:
+            At just 17 years old, Arian brings youthful energy and fresh perspectives to our team. As the youngest member, he's not afraid to think outside the box and push boundaries.
+
+            Mathias:
+            At 18 years old, Mathias is the steady hand in our group. As the middle child, he balances innovation with practicality, ensuring our project stays on track and meets its goals.
+
+            Alexander:
+            At 20 years old, Alexander is the backbone of our team. While he may be labeled "the weak one," don't let that fool you – his determination and skills in software development are invaluable to our project's success.
+        </p>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: black;
+        overflow-x:hidden;
+        overflow-y: hidden;
     }
 
-    private class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    h1 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-}
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 35px;
+    }
+
+    .col {
+        flex: 1;
+        text-align: center; /* Optional: Center-align the content */
+        border-right: 1px solid #ccc;
+        padding-right: 15px; height: 1080px;
+        font-size: 20px;
+        color: white;
+        text-align:left;
+    }
+    .no-border{
+        border-right:none;
+    }
+
+</style>
+
