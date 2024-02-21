@@ -14,4 +14,5 @@ namespace ProductClassLibrary.Products
         public int Noise { get; set; } // in Decibals, dB
         public int RPM { get; set; }
         public string Size { get; set; }
+    }
 }
