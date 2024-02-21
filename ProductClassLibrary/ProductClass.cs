@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace ProductClassLibrary
 {
-    internal class ProductClass : ProductParent
+    public class ProductClass : ProductParent
     {
         public double Price { get; set; }
         public string EANNumber { get; set; }
+
+        public string Title { get; set; } = string.Empty;
 
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProductClassLibrary.Products
 {
-    internal class CPUCooler : ProductClass
+    public class CPUCooler : ProductClass
     {
         public string Type { get; set; }
         public string Socket { get; set; }

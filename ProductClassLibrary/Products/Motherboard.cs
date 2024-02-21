@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProductClassLibrary.Products
 {
-    internal class Motherboard : ProductClass
+    public class Motherboard : ProductClass
     {
         public string Socket {  get; set; }
         public int MaxMemory { get; set; }

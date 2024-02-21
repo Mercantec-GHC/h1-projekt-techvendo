@@ -9,8 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BlazorStrap" Version="5.1.102.51923" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
+    <PackageReference Include="Npgsql" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain Models\UserClasses.csproj" />
+    <ProjectReference Include="..\ProductClassLibrary\ProductClassLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProductClassLibrary.Products
 {
-    internal class Storage : ProductClass
+    public class Storage : ProductClass
     {
         public string StorageType { get; set; }
         public int Capacity { get; set; }
