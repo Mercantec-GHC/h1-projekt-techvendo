@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProductClassLibrary.Products
 {
-    internal class PowerSupply : ProductClass
+    public class PowerSupply : ProductClass
     {
         public string FormFactor {  get; set; }
         public string PowerCapacity { get; set; }
