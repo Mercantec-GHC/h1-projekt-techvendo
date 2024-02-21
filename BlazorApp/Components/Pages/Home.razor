@@ -12,6 +12,9 @@
             StateHasChanged();
         }
     }
+
+    private bool sortDropdown = false;
+    private bool brandDropdown = false;
 }
 
 
@@ -23,14 +26,158 @@
     <p> </p>
 
 
-    <button class="products-btn" type="button">Products</button>
+    <NavLink class="products-btn" href="/products">
+        Products
+    </NavLink>
 
 </div>
 
-<section class="featured">
-    <h1>Featured </h1>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <h2>Sort By:</h2>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" @onclick="() => brandDropdown = !brandDropdown">
+                        Select Brand:
+                    </button>
+                    <div class="dropdown-menu @(brandDropdown ? "show" : "")">
+                        <a class="dropdown-item" href="#">Nvidia</a>
+                        <a class="dropdown-item" href="#">MSI</a>
+                        <a class="dropdown-item" href="#">Asus</a>
+                        <a class="dropdown-item" href="#">Pny</a>
+                        <a class="dropdown-item" href="#">Tuff</a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-9">
+                <h2>Featured Products</h2>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">Product 1</h5>
+                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">Product 2</h5>
+                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">Product 2</h5>
+                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">Product 2</h5>
+                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">Product 2</h5>
+                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">Product 2</h5>
+                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </section>
 
+<section>
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><a href="/aboutus">About Us</a></h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod eros in enim cursus, ac rutrum arcu pellentesque.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Links</h5>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/products">Products</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <p>H.C Andersensvej, Viborg, Denmark</p>
+                    <p>Email: Techvendo69@gmail.com</p>
+                    <p>Phone: +45 93 70 61 51</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <style>
 
@@ -115,5 +262,55 @@
             transform: translateY(-3px); /* Bounce effect on hover */
         }
 
+
+    .featured-title {
+            color: white;
+        }
+
+        h2 {
+            color: white;
+        }
+
+    .card-body, .card  {
+        background-color: #525050;
+        color: white;
+    }
+
+
+    .btn, .btn-sm, .btn-outline-secondary {
+        color: white;
+    }
+
+    .list-group-item {
+        background-color: #525050;
+        color: white;
+    }
+
+    .dropdown-menu {
+        display: none;
+    }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+    .footer {
+        background-color: #2D2D2D;
+        color: #fff;
+        padding: 20px 0;
+    }
+
+        .footer h5 {
+            margin-bottom: 20px;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+            .footer a:hover {
+                color: #ccc;
+            }
 </style>
 
