@@ -1,41 +1,93 @@
-﻿@page "/profileviewer"
+﻿@page "/profileviewer/"
 @using Npgsql;
+
 
 <body id="pageBody">
 
     <h1 id="profileName">@firstName @lastName</h1>
 
-        <div id="descriptionBox">
-            <h1>Description:</h1>
-            <p>@description</p>
-        </div>
+    <div id="descriptionBox">
+        <h1>Description:</h1>
+        <p>@description</p>
+    </div>
 
-        <div id="infoBox">
-            <h1>Joined:</h1>
-            <p>@joined</p>
-            <h1>Location:</h1>
-            <p>@location</p>
-        </div>
+    <div id="infoBox">
+        <h1>Joined:</h1>
+        <p>@joined</p>
+        <h1>Location:</h1>
+        <p>@location</p>
+    </div>
 
-        <div class="profilePicture">
-            <img src="testprofilepicture.png" alt="Profile Picture"/>
-        </div>
+    <div class="profilePicture">
+        <img src="testprofilepicture.png" alt="Profile Picture" />
+    </div>
 
-        <div id="selling">
+    <button id="chatButton">CHAT</button>
 
-        </div>
-   
+    <div id="selling">
+        <h1>Selling:</h1>
+
+        @foreach (var product in productList)
+        {
+            if (sellingCardsLimit <= 1)
+            {
+                sellingCardsLimit++;
+                <SellingCards SellingProduct="product"></SellingCards>
+                <p></p>
+            }
+            else
+            {
+                break;
+            }
+        }
+        <p>See more.</p>
+    </div>
+
 </body>
 
 
-<style>
-    .container {
+@* <style>
+   .container {
         display: flex;
         align-items: flex-start;
     }
+
     #pageBody {
         background-color: black;
     }
+
+    #chatButton {
+        background-color: #666666;
+        color: #ffffff;
+        border: 2px solid #666666;
+        border-radius: 20px; 
+        padding: 8px 30px;
+        font-size: 16px;
+        cursor: pointer; 
+        outline: none;
+    }
+    #selling h1 {
+        color: white;
+        margin-bottom: 10px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    #selling p {
+        color: white;
+        margin-bottom: 10px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #selling {
+        margin-left: 55px;
+        margin-top: 335px;
+        border: 2px solid white;
+        padding: 20px;
+        width: 600px;
+        height: 230px;
+        border-radius: 20px;
+    }
+
     #profileName {
         margin-left: 55px;
         position: relative;
@@ -67,11 +119,12 @@
         height: 170px;
         border-radius: 20px;
     }
-   
-    #descriptionBox p{
+
+    #descriptionBox p {
         margin: 0;
         color: white
     }
+
     #descriptionBox h1 {
         color: white;
         margin-bottom: 10px;
@@ -87,6 +140,7 @@
         font-size: 20px;
         font-weight: bold;
     }
+
     #infoBox p {
         margin: 0;
         color: white;
@@ -107,8 +161,8 @@
     }
 
         .profilePicture img {
-            max-width: 100%;
-            max-height: 100%; 
+            width: 300px;
+            height: 400px;
             display: block;
             margin: auto;
         }
@@ -162,10 +216,13 @@
             height: 230px;
             border-radius: 20px;
         }
-    }
-</style>
+    } 
+</style> *@
 @code {
+    [Parameter]
+    public string UserId { get; set; }
 
+    private int sellingCardsLimit = 0;
     private string firstName = "Firstname";
     private string lastName = "Lastname";
     private string description = "UserDescription";
@@ -173,22 +230,25 @@
     private string joinedTemp = "";
     private string joined = "00-00-0000";
     private string location = "";
+    private string profileid = "";
 
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
     private NpgsqlConnection connection;
 
+    public List<ProductClassLibrary.ProductClass> productList = new List<ProductClassLibrary.ProductClass>();
+
     protected override void OnInitialized()
-    
+
     {
 
         base.OnInitialized();
         connection = new NpgsqlConnection(connectionString);
 
         try
-        { 
+        {
             connection.Open();
 
-            string SelectSQL = "SELECT * FROM userprofiles";
+            string SelectSQL = $"SELECT * FROM userprofiles";
             using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
             {
                 using (NpgsqlDataReader reader = command.ExecuteReader())
@@ -200,14 +260,36 @@
                         description = reader["description"].ToString();
                         joinedTemp = reader["joined"].ToString();
                         location = reader["location"].ToString();
+                        profileid = reader["profileid"].ToString();
 
+                    }
+                }
+            }
+            //How to add gpu to this aswell. (Even more when we get all the tables)
+            SelectSQL = $"SELECT * FROM products WHERE seller_id = {profileid};";
+            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+            {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ProductClassLibrary.ProductClass product = new ProductClassLibrary.ProductClass
+                            {
+                                Price = (int)reader["price"],
+                                EANNumber = reader["ean_number"].ToString(),
+                                Brand = reader["brand"].ToString(),
+                                Model = reader["model"].ToString(),
+                                Series = reader["series"].ToString(),
+                                Title = reader["model"].ToString()
+                            };
+                        productList.Add(product);
                     }
                 }
             }
         }
         catch (Exception e)
         {
-            
+
         }
         DateTime datetimeValue = DateTime.Parse(joinedTemp);
         joined = datetimeValue.ToString("dd-MM-yyyy");
