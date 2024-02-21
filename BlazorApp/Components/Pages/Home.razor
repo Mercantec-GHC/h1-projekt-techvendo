@@ -1,7 +1,119 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@code {
+    private bool isLoaded = false;
 
-Welcome to your new app.
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isLoaded = true;
+            StateHasChanged();
+        }
+    }
+}
+
+
+<div class="hero-content">
+    <h1 class="title-hero @((isLoaded) ? "loaded" : "")">TECHVENDO</h1>
+    <p> </p>
+    <p class="under-hero">We Chop The Prices!</p>
+    <p> </p>
+    <p> </p>
+
+
+    <button class="products-btn" type="button">Products</button>
+
+</div>
+
+<section class="featured">
+    <h1>Featured </h1>
+</section>
+
+
+<style>
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #000;
+    }
+
+    .hero-content {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/1513848341442.jpg');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 100vh;
+        justify-content: center;
+        color: white;
+        flex-direction: column; /* Add this line */
+        text-align: center;
+    }
+
+    @@media (max-width: 768px) {
+        .hero-content {
+            height: 50vh; /* Reduce the height on smaller screens */
+        }
+
+            .hero-content h1 {
+                font-size: 24px; /* Reduce the font size on smaller screens */
+            }
+
+            .hero-content p {
+                font-size: 12px; /* Reduce the font size on smaller screens */
+            }
+    }
+
+    .title-hero {
+        font-size: 64px;
+        font-family: Arial, sans-serif;
+        padding: 10px 20px;
+        font-weight: bold;
+        border: 4px solid transparent;
+        transition: border 1s ease-in-out;
+    }
+
+        .title-hero.loaded {
+            border-color: #698FC0; /* End with a blue border */
+        }
+
+    .hero-content {
+        text-align: center;
+    }
+
+    .under-hero {
+        font-size: 40px;
+        margin-top: 0;
+        padding-top: 0;
+        font-weight: bold;
+    }
+
+    .products-btn {
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        border: 2px solid #fff; /* Solid white border */
+        font-family: Arial, sans-serif; /* Light font family */
+        font-style: italic; /* Italic font style */
+        font-size: 20px; /* Increase font size */
+        color: #fff; /* White text color */
+        text-decoration: none; /* Remove default link underline */
+        cursor: pointer; /* Indicate clickable button */
+        transition: all 0.2s ease-in-out; /* Smooth transition on hover */
+        display: inline-block; /* Allow for inline positioning */
+        padding: 15px 30px; /* Increase button size */
+        border-radius: 20px; /* More rounded corners */
+        width: 300px;
+    }
+
+        .products-btn:hover {
+            color: #000;
+            background-color: #eee; /* Slightly darker background on hover */
+            transform: translateY(-3px); /* Bounce effect on hover */
+        }
+
+</style>
+
