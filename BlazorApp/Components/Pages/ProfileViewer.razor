@@ -1,0 +1,126 @@
+﻿@page "/profileviewer/{UserId}"
+@using Npgsql;
+
+
+<body id="pageBody">
+
+    <h1 id="profileName">@firstName @lastName</h1>
+
+    <div id="descriptionBox">
+        <h1>Description:</h1>
+        <p>@description</p>
+    </div>
+
+    <div id="infoBox">
+        <h1>Joined:</h1>
+        <p>@joined</p>
+        <h1>Location:</h1>
+        <p>@location</p>
+    </div>
+
+    <div class="profilePicture">
+        <img src="testprofilepicture.png" alt="Profile Picture" />
+    </div>
+
+    <button id="chatButton">CHAT</button>
+
+    <div id="selling">
+        <h1>Selling:</h1>
+
+        @foreach (var product in productList)
+        {
+            if (sellingCardsLimit <= 1)
+            {
+                sellingCardsLimit++;
+                <SellingCards SellingProduct="product"></SellingCards>
+                <p></p>
+            }
+            else
+            {
+                break;
+            }
+        }
+        <p>See more.</p>
+    </div>
+
+</body>
+
+
+@code {
+    [Parameter]
+    public string UserId { get; set; }
+
+    private int sellingCardsLimit = 0;
+    private string firstName = "Firstname";
+    private string lastName = "Lastname";
+    private string description = "UserDescription";
+
+    private string joinedTemp = "";
+    private string joined = "00-00-0000";
+    private string location = "";
+    private string profileid = "";
+
+    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+    private NpgsqlConnection connection;
+
+    public List<ProductClassLibrary.ProductClass> productList = new List<ProductClassLibrary.ProductClass>();
+
+    protected override void OnInitialized()
+
+    {
+
+        base.OnInitialized();
+        connection = new NpgsqlConnection(connectionString);
+
+        try
+        
+        {
+            connection.Open();
+
+            string SelectSQL = $"SELECT * FROM userprofiles WHERE profileid = {UserId}";
+            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+            {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        firstName = reader["firstname"].ToString();
+                        lastName = reader["lastname"].ToString();
+                        description = reader["description"].ToString();
+                        joinedTemp = reader["joined"].ToString();
+                        location = reader["location"].ToString();
+                        profileid = reader["profileid"].ToString();
+
+                    }
+                }
+            }
+            SelectSQL = $"SELECT * FROM products WHERE seller_id = {profileid};";
+            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+            {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ProductClassLibrary.ProductClass product = new ProductClassLibrary.ProductClass
+                            {
+                                Price = (int)reader["price"],
+                                EANNumber = reader["ean_number"].ToString(),
+                                Brand = reader["brand"].ToString(),
+                                Model = reader["model"].ToString(),
+                                Series = reader["series"].ToString(),
+                                Title = reader["model"].ToString()
+                            };
+                        productList.Add(product);
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+
+        }
+        DateTime datetimeValue = DateTime.Parse(joinedTemp);
+        joined = datetimeValue.ToString("dd-MM-yyyy");
+    }
+
+}

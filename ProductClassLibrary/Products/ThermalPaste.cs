@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProductClassLibrary.Products
 {
-    internal class ThermalPaste : ProductClass
+    public class ThermalPaste : ProductClass
     {
         public int ThermalConductivity { get; set; }
         public int MinTemp {  get; set; }

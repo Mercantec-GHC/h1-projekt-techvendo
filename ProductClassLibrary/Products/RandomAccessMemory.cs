@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProductClassLibrary.Products
 {
-    internal class RandomAccessMemory : ProductClass
+    public class RandomAccessMemory : ProductClass
     {
         public int Capacity { get; set; }
         public string Type { get; set; }
