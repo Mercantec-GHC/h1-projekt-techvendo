@@ -5,31 +5,25 @@
 <body id="pageBody">
 
     <h1 id="profileName">@firstName @lastName</h1>
-
+    <hr id="nameUnderline"/>
     <div id="descriptionBox">
-        <h1>Description:</h1>
         <p>@description</p>
     </div>
+    <hr id="descriptionUnderline" />
 
-    <div id="infoBox">
-        <h1>Joined:</h1>
-        <p>@joined</p>
-        <h1>Location:</h1>
-        <p>@location</p>
-    </div>
+        <div id="profilePictureContainer">
+            <img src="/testprofilepicture.png" id="profilePicture" />
+        </div>
+        <h1 id="infoTitle">INFO</h1>
+        <p id="infoText">Joined: @joined Location: @location</p>
+  
 
-    <div class="profilePicture">
-        <img src="testprofilepicture.png" alt="Profile Picture" />
-    </div>
-
-    <button id="chatButton">CHAT</button>
-
-    <div id="selling">
-        <h1>Selling:</h1>
+    <h1 id="sellingTitle">SELLING</h1>
+    <div id="selling"> <br />
 
         @foreach (var product in productList)
         {
-            if (sellingCardsLimit <= 1)
+            if (sellingCardsLimit <= 3) //Makes sure it cant show more than 4 items
             {
                 sellingCardsLimit++;
                 <SellingCards SellingProduct="product"></SellingCards>
@@ -40,8 +34,21 @@
                 break;
             }
         }
-        <p>See more.</p>
+        <br />
+        <button id="seeMoreButton">
+            <p>See More</p>
+        </button>
     </div>
+
+    <button id="chatButton">
+        <p>CHAT</p>
+    </button>
+
+    <button id="reportButton">
+        <p>REPORT</p>
+    </button>
+
+    <h1 id="repTitle">REPUTATION</h1>
 
 </body>
 
@@ -73,7 +80,7 @@
         connection = new NpgsqlConnection(connectionString);
 
         try
-        
+
         {
             connection.Open();
 
@@ -117,7 +124,7 @@
         }
         catch (Exception e)
         {
-
+            
         }
         DateTime datetimeValue = DateTime.Parse(joinedTemp);
         joined = datetimeValue.ToString("dd-MM-yyyy");
