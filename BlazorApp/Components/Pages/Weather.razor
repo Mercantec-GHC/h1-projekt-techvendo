@@ -5,12 +5,57 @@
 
 <body>
     <div class="wrapper">
-        <header>
-            <img src="/images/asus.png" class="background">
+        <div class="header" style="padding: 0;">
+            <img src="/images/gamingpc.png" class="background">
             <h1 class="title">ABOUT US</h1>
-        </header>
+        </div>
         <section>
-            In the heart of a bustling city, where the streets hummed with the energy of a thousand lives intertwining, there stood a quaint little bookstore, its weathered sign swinging gently in the breeze. Inside, the scent of old paper and ink filled the air, wrapping around visitors like a comforting blanket. Rows upon rows of books lined the shelves, each one a portal to a different world waiting to be explored. Amidst the shelves, a lone figure sat, lost in the pages of a novel. His eyes danced with the flickering light of the overhead lamps, tracing the words as they transported him to distant lands and forgotten times. The hours slipped away unnoticed as he delved deeper into the story, oblivious to the world outside. Outside, the city bustled with life, each person consumed by their own thoughts and desires. The streets echoed with the sounds of laughter and chatter, a symphony of human existence playing out beneath the watchful gaze of the towering skyscrapers. As night fell, the city transformed, casting long shadows across the pavement as the lights flickered to life, painting the streets in a kaleidoscope of colors. The bookstore too took on a new life, its windows glowing warmly against the darkness outside. Inside, the figure finally closed the book, a contented smile playing on his lips. He glanced around at the familiar shelves, each book holding a memory of adventures past. With a sigh of satisfaction, he rose from his seat, ready to face the world outside once more. And so, the city continued to pulse with life, each person weaving their own story into the fabric of its streets. And in the heart of it all, the little bookstore stood as a beacon of warmth and wonder, inviting all who passed by to step inside and lose themselves in the magic of words.
+            At TechVendo, we are passionate about providing a seamless platform for individuals to buy and sell quality used computer hardware. Founded with a vision to revolutionize the way technology enthusiasts interact in the marketplace, we facilitate direct peer-to-peer transactions (C2C) with utmost transparency and reliability.
+            Our mission is to bridge the gap between buyers and sellers, offering a trusted space where both parties can engage in transactions with confidence. Whether you're looking to upgrade your gaming rig, enhance your workstation, or simply declutter your tech collection, TechVendo is your go-to destination.
+            We understand the importance of affordability and sustainability in today's tech landscape. By giving a second life to pre-loved hardware, we contribute to reducing electronic waste and making cutting-edge technology more accessible to everyone.
+            At TechVendo, integrity and customer satisfaction are at the core of everything we do. Our user-friendly platform, coupled with robust security measures, ensures a smooth and secure transaction experience for all our users.
+            Join us in reshaping the future of tech commerce. Discover great deals, unlock hidden treasures, and connect with fellow tech enthusiasts at TechVendo – where every transaction is a win-win for both buyers and sellers alike.
+        </section>
+        <section>treasures, and connect with fellow tech enthusiasts at TechVendo – where every transaction is a win-win for both buyers and sellers alike.</section>
+
+        <div class="header2">
+            <img src="/images/hands.png" class="nextbackground">
+            <h2 class="title2">SUSTAINABILITY</h2>
+        </div>
+        <section>
+            Reusability is essential in today's world. It's not just about reducing waste; it's about maximizing the lifespan of products and minimizing our impact on the environment. 
+
+            When we reuse items, we're not only saving money but also conserving resources and energy that would otherwise be spent on manufacturing new products. 
+
+            Plus, reusing things often adds character and history to them, making them more valuable in a sentimental sense. 
+
+            Overall, embracing reusability is a smart and responsible choice that benefits both individuals and the planet.
+            In our homes, adopting practices like upcycling old furniture or repurposing containers for storage can breathe new life into items that might otherwise end up in landfills.
+
+            Similarly, in industries, designing products with reusability in mind can revolutionize manufacturing processes, leading to more sustainable practices and less waste generation.
+
+            , reusability encourages creativity and innovation. It challenges us to think outside the box and find new uses for old things, fostering a culture of resourcefulness and problem-solving.
+
+            By prioritizing reusability, we not only reduce our ecological footprint but also contribute to building a more resilient and sustainable future for generations to come.
+        </Section>
+        <section>sustainable future for generations to come.</section>
+        
+        <div class="header3">
+            <img src="/images/theteam.png" class="lastbackground">
+            <h2 class="title3">MEAT THE TEAM</h2>
+        </div>
+        <section>
+            Arian: 
+            At just 17 years old, Arian brings youthful energy and fresh perspectives to our team. As the youngest member, he's not afraid to think outside the box and push boundaries.
+
+            Mathilde: 
+            At 18 years old, Mathilde is the steady hand in our group. As the middle child, he balances innovation with practicality, ensuring our project stays on track and meets its goals.
+
+            Alexander: 
+            At 20 years old, Alexander is the backbone of our team. While he may be labeled "the weak one," don't let that fool you – his determination and skills in software development are invaluable to our project's success.
+        </section>
+        <section>
+            skills in software development are invaluable to our project's success.
         </section>
     </div>    
 </body>
@@ -30,7 +75,27 @@
 
     }
 
-    header {
+    .header3 {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        transform-style: preserve-3d;
+        z-index: -1;
+    }
+
+    .header2 {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        transform-style: preserve-3d;
+        z-index: -1;
+    }
+
+    .header {
         position: relative;
         display: flex;
         justify-content: center;
@@ -44,6 +109,14 @@
         transform: translateZ(-5px);
     }
 
+    .nextbackground {
+        transform: translateZ(-5px);
+    }
+
+    .lastbackground {
+        transform: translateZ(-5px);
+    }
+
     .background {
         position:absolute;
         height: 100%;
@@ -51,10 +124,39 @@
         object-fit: cover;
         z-index: -1;
     }
+
+    .nextbackground {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        object-fit: cover; 
+        z-index: -1;
+    }
+
+    .lastbackground {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        object-fit: cover; 
+        z-index: -1;
+    }
     
     .title {
         font-size: 7rem;
-        color: #333;
+        color: white;
+        text-shadow: 0 0 5px black;
+        
+    }
+
+    .title2 {
+        font-size: 7rem;
+        color: white;
+        text-shadow: 0 0 5px black;
+    }
+
+    .title3 {
+        font-size: 7rem;
+        color: white;
         text-shadow: 0 0 5px black;
     }
 
@@ -63,5 +165,6 @@
         padding: 1.5rem;
         background: #333;
         color: white;
+        text-align: center;
     }
 </style>
