@@ -14,8 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain Models\UserClasses.csproj" />
+    <ProjectReference Include="..\Domain Models\DomainModels.csproj" />
     <ProjectReference Include="..\ProductClassLibrary\ProductClassLibrary.csproj" />
+    <ProjectReference Include="..\UserClasses\UserClasses.csproj" />
   </ItemGroup>
 
 </Project>

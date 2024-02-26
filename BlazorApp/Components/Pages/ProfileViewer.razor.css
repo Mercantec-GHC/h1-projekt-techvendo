@@ -119,8 +119,8 @@
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    margin-left: 74%;
-    bottom: 40%;
+    right: 21%;
+    top: 55%
 }
 
     #chatButton p {
@@ -140,8 +140,8 @@
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    margin-left: 82%;
-    bottom: 40%;
+    right: 13%;
+    top: 55%;
 }
 
     #reportButton p {
@@ -150,16 +150,33 @@
         margin: 0;
     }
 
+.grid-container {
+    display: grid;
+    grid-template-columns: 3fr 1fr; 
+}
+
     #reportButton:hover {
         background-color: #CB6F6F;
     }
-
 #repTitle {
-    position: absolute;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin-left: 74%;
-    margin-top: -5%;
     color: white;
+    font-size: 30px;
+    position: fixed;
+    top: 62%;
+    right: 18%;
+}
+
+.star-rating {
+    position: fixed;
+    display: flex;
+    top: 65%;
+    right: 17.5%;
+
+}
+
+.star {
+    font-size: 45px;
 }
 
 @media only screen and (min-width: 1920px) {

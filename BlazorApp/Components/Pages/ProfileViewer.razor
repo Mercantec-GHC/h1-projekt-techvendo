@@ -1,55 +1,86 @@
 ﻿@page "/profileviewer/{UserId}"
 @using Npgsql;
 
+<div class="grid-container">
+    <div class="column1">
+        <h1 id="profileName">@CurrentUser.FirstName @CurrentUser.LastName</h1>
 
-<body id="pageBody">
+        <hr id="nameUnderline" />
 
-    <h1 id="profileName">@firstName @lastName</h1>
-    <hr id="nameUnderline"/>
-    <div id="descriptionBox">
-        <p>@description</p>
-    </div>
-    <hr id="descriptionUnderline" />
+        <div id="descriptionBox">
+            <p>@CurrentUser.Description</p>
+        </div>
+
+        <hr id="descriptionUnderline" />
 
         <div id="profilePictureContainer">
             <img src="/testprofilepicture.png" id="profilePicture" />
         </div>
+
         <h1 id="infoTitle">INFO</h1>
-        <p id="infoText">Joined: @joined Location: @location</p>
-  
+        <p id="infoText">Joined: @CurrentUser.Joined Location: @CurrentUser.Location</p>
 
-    <h1 id="sellingTitle">SELLING</h1>
-    <div id="selling"> <br />
+        <h1 id="sellingTitle">SELLING</h1>
+        <div id="selling">
+            <br />
 
-        @foreach (var product in productList)
-        {
-            if (sellingCardsLimit <= 3) //Makes sure it cant show more than 4 items
+            @foreach (var product in productList)
             {
-                sellingCardsLimit++;
-                <SellingCards SellingProduct="product"></SellingCards>
-                <p></p>
+                if (sellingCardsLimit <= 3) //Makes sure it cant show more than 4 items
+                {
+                    sellingCardsLimit++;
+                    <SellingCards SellingProduct="product"></SellingCards>
+                    <p></p>
+                    if (sellingCardsLimit == 3)
+                    {
+                        <button id="seeMoreButton">
+                            <p>See More</p>
+                        </button>
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+            <br />
+           
+        </div>
+    </div>
+
+
+    <div class="column2">
+
+        <button id="chatButton">
+            <p>CHAT</p>
+        </button>
+
+        <button id="reportButton">
+            <p>REPORT</p>
+        </button>
+
+        <h1 id="repTitle">REPUTATION</h1>
+
+        <div>
+            @if (CurrentUser.Reputation > 0)
+            {
+                <div class="star-rating">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span style="@(i <= CurrentUser.Reputation ? "color: gold;" : "color: #ccc;")" class="star">&#9733;</span>
+                    }
+                </div>
             }
             else
             {
-                break;
+                <span>No reputation yet.</span>
             }
-        }
-        <br />
-        <button id="seeMoreButton">
-            <p>See More</p>
-        </button>
+
+        </div>
     </div>
+</div>
 
-    <button id="chatButton">
-        <p>CHAT</p>
-    </button>
-
-    <button id="reportButton">
-        <p>REPORT</p>
-    </button>
-
-    <h1 id="repTitle">REPUTATION</h1>
-
+<body id="pageBody">
 </body>
 
 
@@ -58,24 +89,17 @@
     public string UserId { get; set; }
 
     private int sellingCardsLimit = 0;
-    private string firstName = "Firstname";
-    private string lastName = "Lastname";
-    private string description = "UserDescription";
 
-    private string joinedTemp = "";
-    private string joined = "00-00-0000";
-    private string location = "";
-    private string profileid = "";
+    UserClasses.UserProfiles CurrentUser = new UserClasses.UserProfiles();
 
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+
     private NpgsqlConnection connection;
 
     public List<ProductClassLibrary.ProductClass> productList = new List<ProductClassLibrary.ProductClass>();
 
     protected override void OnInitialized()
-
     {
-
         base.OnInitialized();
         connection = new NpgsqlConnection(connectionString);
 
@@ -91,17 +115,19 @@
                 {
                     while (reader.Read())
                     {
-                        firstName = reader["firstname"].ToString();
-                        lastName = reader["lastname"].ToString();
-                        description = reader["description"].ToString();
-                        joinedTemp = reader["joined"].ToString();
-                        location = reader["location"].ToString();
-                        profileid = reader["profileid"].ToString();
+                        CurrentUser.FirstName = reader["firstname"].ToString();
+                        CurrentUser.LastName = reader["lastname"].ToString();
+                        CurrentUser.Description = reader["description"].ToString();
+                        CurrentUser.Joined = reader["joined"].ToString();
+                        CurrentUser.Location = reader["location"].ToString();
+                        CurrentUser.ProfileId = (int)reader["profileid"];
+                        CurrentUser.Reputation = (int)reader["reputation"];
+
 
                     }
                 }
             }
-            SelectSQL = $"SELECT * FROM products WHERE seller_id = {profileid};";
+            SelectSQL = $"SELECT * FROM products WHERE seller_id = {CurrentUser.ProfileId};";
             using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
             {
                 using (NpgsqlDataReader reader = command.ExecuteReader())
@@ -121,13 +147,12 @@
                     }
                 }
             }
+            DateTime datetimeValue = DateTime.Parse(CurrentUser.Joined);
+            CurrentUser.Joined = datetimeValue.ToString("dd-MM-yyyy");
         }
         catch (Exception)
         {
-            
+          
         }
-        DateTime datetimeValue = DateTime.Parse(joinedTemp);
-        joined = datetimeValue.ToString("dd-MM-yyyy");
     }
-
 }
