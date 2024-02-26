@@ -1,4 +1,4 @@
-﻿namespace Domain_Models
+﻿namespace UserClasses
 {
     public class UserProfiles
     {
@@ -9,5 +9,7 @@
         public int Selling {  get; set; }
         public string Location { get; set; }
         public string Joined { get; set; }
+        public  string Description { get; set; }
+        public int ProfileId { get; set; }
     }
 }
