@@ -1,0 +1,90 @@
+﻿@page "/products"
+@using Npgsql
+@using ProductClassLibrary
+
+<PageTitle>Products</PageTitle>
+
+<div class="product-title">
+    <h1>Products</h1>
+</div>
+
+<section class="products-section">
+    <div class="container">
+        <div class="row">
+            @foreach (var product in products)
+            {
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" class="card-img-top" alt="Product Image">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Brand</h5>
+                            <span class="info">
+                                @product.Brand
+                                @product.Model
+                                @product.Series
+                                @product.EANNumber
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+    private NpgsqlConnection connection;
+    private List<ProductClass> products;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        connection = new NpgsqlConnection(connectionString);
+        products = GetProducts();
+    }
+
+    public List<ProductClass> GetProducts()
+    {
+        var products = new List<ProductClass>();
+
+        try
+        {
+            connection.Open();
+            string SelectSQL = "SELECT * FROM products";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+            {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var product = new ProductClass
+                            {
+                                Price = (int)reader["price"],
+                                EANNumber = reader["ean_number"].ToString(),
+                                Brand = reader["brand"].ToString(),
+                                Model = reader["model"].ToString(),
+                                Series = reader["series"].ToString()
+                            };
+
+                        products.Add(product);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        finally
+        {
+            if (connection.State == System.Data.ConnectionState.Open)
+            {
+                connection.Close();
+            }
+        }
+
+        return products;
+    }
+}
