@@ -4,26 +4,33 @@
 
 <PageTitle>Products</PageTitle>
 
+
+@* TODO: style this fucker *@
 <div class="product-title">
-    <h1>Products</h1>
+    <h1 class="prod-title">Products</h1>
 </div>
 
 <section class="products-section">
     <div class="container">
-        <div class="row">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
             @foreach (var product in products)
             {
-                <div class="col-md-4">
-                    <div class="card">
-                        <img src="product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" class="card-img-top" alt="Product Image">
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <img src="..\images\product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" class="card-img-top" alt="Product Image">
                         <div class="card-body">
-                            <h5 class="card-title">@product.Brand</h5>
-                            <span class="info">
+                            <h5 class="card-title">@product.Brand @product.Series</h5>
+                            <p class="card-text">
                                 @product.Brand
-                                @product.Model
                                 @product.Series
-                                @product.EANNumber
-                            </span>
+                                @product.Model
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => OpenModal(product)">View</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary">Price: @product.Price $</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -32,7 +39,42 @@
     </div>
 </section>
 
+@if (showModal)
+{
+    <div class="modal" tabindex="-1" style="display:block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@selectedProduct.Brand</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    EAN Number: @selectedProduct.EANNumber
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
+
+    private bool showModal = false;
+    private ProductClass selectedProduct;
+
+    void OpenModal(ProductClass product)
+    {
+        selectedProduct = product;
+        showModal = true;
+    }
+
+    void CloseModal()
+    {
+        showModal = false;
+    }
+
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
     private NpgsqlConnection connection;
     private List<ProductClass> products;
@@ -87,4 +129,27 @@
 
         return products;
     }
+
 }
+
+<style>
+    body {
+        background-color: #000;
+    }
+
+    .prod-title {
+        color: white;
+    }
+
+    .card-body, .card {
+        background-color: #525050;
+        color: white;
+        padding: 20px 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
+
+    .btn-outline-secondary {
+        color: white;
+    }
+</style>
