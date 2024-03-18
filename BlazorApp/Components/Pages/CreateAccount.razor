@@ -1,0 +1,74 @@
+﻿@page "/createaccount"
+@using Npgsql;
+
+<body>
+    <input @bind="Firstname" placeholder="Enter Firstname..." />
+    <input @bind="Lastname" placeholder="Enter Lastname..." />
+    <br />
+    <input @bind="Email" placeholder="Enter Email..." />
+    <br />
+    <input @bind="BirthDay" placeholder="Day" maxlength="2" size="2" />
+    <input @bind="BirthMonth" placeholder="Month" maxlength="2" size="2" />
+    <input @bind="BirthYear" placeholder="Year" maxlength="4" size="4" />
+    <input @bind="Location" placeholder="Enter City..."/>
+    <br />
+    <input @bind="Password" placeholder="Enter Password..." type="password" />
+    <input @bind="Phonenumber" placeholder="Enter Phonenumber..."/>
+    <br />
+    <input @bind="AcceptTos" type="checkbox" />
+    <label for="acceptTos">Accept Terms of Service</label>
+    <br />
+    <button @onclick="Create">Create</button>
+
+</body>
+
+@code {
+    private string Firstname { get; set; }
+    private string Lastname { get; set; }
+    private string Phonenumber { get; set; }
+    private string BirthDay { get; set; }
+    private string BirthMonth { get; set; }
+    private string BirthYear { get; set; }
+    private string Location { get; set; }
+    private string Email { get; set; }
+    private string Password { get; set; }
+    private bool AcceptTos { get; set; }
+
+    private string JoinedDate { get; set; }
+
+    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+
+    private NpgsqlConnection connection;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+    }
+
+    private void Create()
+    {
+        connection = new NpgsqlConnection(connectionString);
+        JoinedDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+        try
+
+        {
+            connection.Open();
+
+            string SelectSQL = $"INSERT INTO userprofiles (firstname, lastname, birthdate, reputation, email, password, phonenumber, termsofservice, location, joined, description) VALUES ('{Firstname}', '{Lastname}', '{BirthYear}-{BirthMonth}-{BirthDay}', '0', '{Email}', '{Password}', {Phonenumber}, {AcceptTos.ToString()}, '{Location}', '{JoinedDate}', '')";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+
+        catch
+        {
+
+        }
+
+
+    }
+}

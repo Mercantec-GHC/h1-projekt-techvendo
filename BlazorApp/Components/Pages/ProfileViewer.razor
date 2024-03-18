@@ -87,6 +87,7 @@
 @code {
     [Parameter]
     public string UserId { get; set; }
+    private string primaryKeyColumn;
 
     private int sellingCardsLimit = 0;
 
@@ -108,7 +109,7 @@
         {
             connection.Open();
 
-            string SelectSQL = $"SELECT * FROM userprofiles WHERE profileid = {UserId}";
+            string SelectSQL = $"SELECT * FROM userprofiles WHERE id = {UserId}";
             using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
             {
                 using (NpgsqlDataReader reader = command.ExecuteReader())
@@ -120,7 +121,7 @@
                         CurrentUser.Description = reader["description"].ToString();
                         CurrentUser.Joined = reader["joined"].ToString();
                         CurrentUser.Location = reader["location"].ToString();
-                        CurrentUser.ProfileId = (int)reader["profileid"];
+                        CurrentUser.ProfileId = (int)reader["id"];
                         CurrentUser.Reputation = (int)reader["reputation"];
 
 
