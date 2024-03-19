@@ -26,7 +26,7 @@
 
             @foreach (var product in productList)
             {
-                if (sellingCardsLimit <= 3) //Makes sure it cant show more than 4 items
+                if (sellingCardsLimit <= 2) //Makes sure it cant show more than 4 items
                 {
                     sellingCardsLimit++;
                     <SellingCards SellingProduct="product"></SellingCards>
@@ -62,20 +62,12 @@
         <h1 id="repTitle">REPUTATION</h1>
 
         <div>
-            @if (CurrentUser.Reputation > 0)
-            {
                 <div class="star-rating">
                     @for (int i = 1; i <= 5; i++)
                     {
                         <span style="@(i <= CurrentUser.Reputation ? "color: gold;" : "color: #ccc;")" class="star">&#9733;</span>
                     }
                 </div>
-            }
-            else
-            {
-                <span>No reputation yet.</span>
-            }
-
         </div>
     </div>
 </div>
@@ -142,7 +134,8 @@
                                 Brand = reader["brand"].ToString(),
                                 Model = reader["model"].ToString(),
                                 Series = reader["series"].ToString(),
-                                Title = reader["model"].ToString()
+                                Title = reader["model"].ToString(),
+                                ProductID = (int)reader["product_id"]
                             };
                         productList.Add(product);
                     }

@@ -23,8 +23,8 @@
 </body>
 
 @code {
-    private string Firstname { get; set; }
-    private string Lastname { get; set; }
+    private string Firstname;
+    private string Lastname;
     private string Phonenumber { get; set; }
     private string BirthDay { get; set; }
     private string BirthMonth { get; set; }
@@ -33,6 +33,12 @@
     private string Email { get; set; }
     private string Password { get; set; }
     private bool AcceptTos { get; set; }
+
+    private bool showEmptyNotification = false;
+    private bool accountCreated = false;
+    private bool emailExists = false;
+
+    private List<string> inputFields = new List<string>();
 
     private string JoinedDate { get; set; }
 
@@ -48,27 +54,110 @@
 
     private void Create()
     {
+        inputFields.Add(Firstname);
+        inputFields.Add(Lastname);
+        inputFields.Add(Phonenumber);
+        inputFields.Add(BirthDay);
+        inputFields.Add(BirthMonth);
+        inputFields.Add(BirthYear);
+        inputFields.Add(Location);
+        inputFields.Add(Email);
+        inputFields.Add(Password);
+
+        showEmptyNotification = false;
         connection = new NpgsqlConnection(connectionString);
         JoinedDate = DateTime.Now.ToString("yyyy-MM-dd");
 
+        foreach (string inputField in inputFields)
+        {
+            if (!string.IsNullOrEmpty(inputField))
+            {
+                continue;
+            }
+            else
+            {
+                notifyEmpty();
+                return;
+            }
+        }
         try
 
         {
             connection.Open();
 
-            string SelectSQL = $"INSERT INTO userprofiles (firstname, lastname, birthdate, reputation, email, password, phonenumber, termsofservice, location, joined, description) VALUES ('{Firstname}', '{Lastname}', '{BirthYear}-{BirthMonth}-{BirthDay}', '0', '{Email}', '{Password}', {Phonenumber}, {AcceptTos.ToString()}, '{Location}', '{JoinedDate}', '')";
+            string SelectSQL = $"SELECT * FROM userprofiles WHERE email = '{Email}'";
 
             using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
             {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string email = reader["email"].ToString();
+
+                        if (email == Email)
+                        {
+                            emailExists = true;
+                            return;
+                        }
+                    }
+                }
+                
+            }
+
+            string InsertSQL = $"INSERT INTO userprofiles (firstname, lastname, birthdate, reputation, email, password, phonenumber, termsofservice, location, joined, description) VALUES ('{Firstname}', '{Lastname}', '{BirthYear}-{BirthMonth}-{BirthDay}', '0', '{Email}', '{Password}', {Phonenumber}, {AcceptTos.ToString()}, '{Location}', '{JoinedDate}', '')";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(InsertSQL, connection))
+            {
                 command.ExecuteNonQuery();
+                accountCreated = true;
             }
         }
-
         catch
         {
 
         }
+    }
 
+    private bool checkEmpty(string inputField)
+    {
+        if (!string.IsNullOrEmpty(inputField.Trim()))
+        {
+            return true;
 
+        } else
+        {
+            return false;
+        }
+    }
+
+    private void notifyEmpty()
+    {
+        showEmptyNotification = true;
     }
 }
+
+@if (showEmptyNotification)
+{
+    <div class="alert">
+        <span class="closebtn"></span>
+        Not all input fields are filled out
+    </div>
+}
+
+@if (accountCreated) 
+{
+    <div class="alert">
+        <span class="closebtn"></span>
+        Account created!
+    </div>
+}
+
+@if (emailExists)
+{
+    <div class="alert">
+        <span class="closebtn"></span>
+        The chosen email is already used.
+    </div>
+}
+
