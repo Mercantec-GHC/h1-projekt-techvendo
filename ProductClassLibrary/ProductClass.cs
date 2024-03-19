@@ -12,6 +12,7 @@ namespace ProductClassLibrary
         public string EANNumber { get; set; }
 
         public string Title { get; set; } = string.Empty;
+        public int ProductID { get; set; }
 
     }
 }
