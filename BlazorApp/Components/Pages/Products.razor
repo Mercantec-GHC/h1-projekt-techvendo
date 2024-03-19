@@ -1,13 +1,17 @@
 ﻿@page "/products"
 @using Npgsql
 @using ProductClassLibrary
+@inject NavigationManager NavigationManager
 
 <PageTitle>Products</PageTitle>
 
 
 @* TODO: style this fucker *@
-<div class="product-title">
+<div class="header d-flex justify-content-between align-items-center pt-3 text-center">
     <h1 class="prod-title">Products</h1>
+    <div class="sellpage-btn-container">
+        <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
+    </div>
 </div>
 
 <section class="products-section">
@@ -60,6 +64,11 @@
 }
 
 @code {
+
+    private void NavigateToSellPage()
+    {
+        NavigationManager.NavigateTo("/products/sellpage");
+    }
 
     private bool showModal = false;
     private ProductClass selectedProduct;
@@ -151,5 +160,25 @@
 
     .btn-outline-secondary {
         color: white;
+    }
+
+    .prod-title{
+        text-align: center;
+
+    }
+
+    .sellpage-btn {
+        background-color: #808080; /* a grayish color */
+        border-radius: 15px; /* makes the button more rounded */
+        color: white; /* text color */
+        padding: 10px 20px; /* button size */
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 15px 15px;
+        cursor: pointer;
+        position: relative; 
+        right: 150%;
     }
 </style>
