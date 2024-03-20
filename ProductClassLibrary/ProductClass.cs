@@ -14,5 +14,9 @@ namespace ProductClassLibrary
         public string Title { get; set; } = string.Empty;
         public int ProductID { get; set; }
 
+        public string Description { get; set; } = string.Empty;
+        public int VRAM { get; set; }
+        public string Ports { get; set; }
+
     }
 }
