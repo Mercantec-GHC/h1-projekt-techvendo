@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp", "BlazorApp\Blaz
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductClassLibrary", "ProductClassLibrary\ProductClassLibrary.csproj", "{58C31F8E-B2B8-4A95-94B4-DB65003AF3EA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserClasses", "UserClasses\UserClasses.csproj", "{BA78F72A-CD47-4213-93BA-7EDC3B215413}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserClasses", "UserClasses\UserClasses.csproj", "{BA78F72A-CD47-4213-93BA-7EDC3B215413}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -15,10 +15,33 @@
     </div>
 </div>
 
+<div class="product_type">
+    <label style="color: white;">Product type:</label>
+    <select @bind="selectedTypeOption">
+        <option value="CPU">CPU</option>
+        <option value="GPU">GPU</option>
+    </select>
+    <button @onclick="ProductType">Toggle Direction</button>
+</div>
+
+<div class="sort-reset">
+    <label style="color: white;">Clear filter</label>
+    <button @onclick="ProductReset">Clear filter</button>
+</div>
+
+<div class="sorting-options">
+    <label style="color: white;">Sort By:</label>
+    <select @bind="selectedSortOption">
+        <option value="Price">Price</option>
+        <option value="Brand">Brand</option>
+    </select>
+    <button @onclick="ToggleSortDirection">Toggle Direction</button>
+</div>
+
 <section class="products-section">
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            @foreach (var product in products)
+            @foreach (var product in sortedProducts)
             {
                 <div class="col">
                     <div class="card shadow-sm">
@@ -54,9 +77,11 @@
                     <button type="button" class="btn-close" @onclick="CloseModal"></button>
                 </div>
                 <div class="modal-body">
+
                     <p><strong>Ports:</strong> @selectedProduct.Ports</p>
                     <p><strong>VRAM: </strong> @selectedProduct.VRAM</p>
                     <p><strong>Description: </strong>@selectedProduct.Description</p
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
@@ -67,14 +92,23 @@
 }
 
 @code {
+    private List<ProductClass> products;
+    private List<ProductClass> sortedProducts = new List<ProductClass>();
+    private List<ProductClass> sortedtype;
+    private List<ProductClass> filteredProducts = new List<ProductClass>(); 
+    private bool showModal = false;
+    private ProductClass selectedProduct;
+    private string selectedSortOption = "Price";
+    private string selectedTypeOption = "Product_Type";
+    private bool sortAscending = true;
+
+
 
     private void NavigateToSellPage()
     {
         NavigationManager.NavigateTo("/products/sellpage");
     }
 
-    private bool showModal = false;
-    private ProductClass selectedProduct;
 
     void OpenModal(ProductClass product)
     {
@@ -89,13 +123,13 @@
 
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
     private NpgsqlConnection connection;
-    private List<ProductClass> products;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         connection = new NpgsqlConnection(connectionString);
         products = GetProducts();
+        SortProducts();
     }
 
     public List<ProductClass> GetProducts()
@@ -123,9 +157,10 @@
                                 Description = reader["description"].ToString()
 
 
-                            };
 
+                            };
                         products.Add(product);
+                        sortedProducts.Add(product);
                     }
                 }
             }
@@ -145,6 +180,52 @@
         return products;
     }
 
+
+    void SortProducts()
+    {
+        switch (selectedSortOption)
+        {
+            case "Price":
+                sortedProducts = sortAscending ? sortedProducts.OrderBy(p => p.Price).ToList() : sortedProducts.OrderByDescending(p => p.Price).ToList();
+                break;
+            case "Brand":
+                sortedProducts = sortAscending ? sortedProducts.OrderBy(p => p.Brand).ToList() : sortedProducts.OrderByDescending(p => p.Brand).ToList();
+                break;
+        }
+    }
+
+    void SortType()
+    {
+
+    }
+
+    void ToggleSortDirection()
+    {
+        sortAscending = !sortAscending;
+        SortProducts();
+
+    }
+
+    void ProductType()
+    {
+        sortedProducts.Clear();
+        foreach (ProductClass product in products)
+        {
+            if (product.Product_Type == selectedTypeOption)
+            {
+                sortedProducts.Add(product);
+            }
+        }
+    }
+
+    void ProductReset()
+    {
+        sortedProducts.Clear();
+        foreach (ProductClass product in products)
+        {
+            sortedProducts.Add(product);
+        }
+    }
 }
 
 <style>
@@ -154,6 +235,7 @@
 
     .prod-title {
         color: white;
+       text-align: right;
     }
 
     .card-body, .card {
@@ -166,11 +248,6 @@
 
     .btn-outline-secondary {
         color: white;
-    }
-
-    .prod-title{
-        text-align: center;
-
     }
 
     .sellpage-btn {

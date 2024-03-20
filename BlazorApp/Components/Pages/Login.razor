@@ -1,0 +1,91 @@
+﻿@page "/login"
+@using Npgsql;
+@inject NavigationManager NavigationManager
+
+<body>
+    <input @bind="Email" placeholder="Enter Email..."/>
+    <br />
+    <input @bind="Password" placeholder="Enter Password..." type="password"/>
+    <br />
+    <button @onclick="loginCheck">Login</button>
+    <br />
+    <a @onclick="navigateToCreateAccount">Create a new account</a>
+</body>
+
+
+@code {
+    private string Email;
+    private string Password;
+
+    private string dbEmail;
+    private string dbPassword;
+    private string dbFirstname;
+    private string dbLastname;
+
+    private bool loginSuccess = false;
+    private bool loginFailed = false;
+
+    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+    private NpgsqlConnection connection;
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        connection = new NpgsqlConnection(connectionString);
+        connection.Open();
+    }
+
+    private void loginCheck()
+    {
+        loginFailed = false;
+        loginSuccess = false;
+        dbEmail = null;
+        dbPassword = null;
+
+        string SelectSQL = $"SELECT * FROM userprofiles WHERE email = '{Email}' AND password = crypt('{Password}', password)";
+
+        using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+        {
+            using (NpgsqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                       dbEmail = reader["email"].ToString();
+                       dbPassword = reader["password"].ToString();
+                       dbFirstname = reader["firstname"].ToString();
+                       dbLastname = reader["lastname"].ToString();
+                }
+            }
+        }
+
+        if (string.IsNullOrEmpty(dbEmail) && string.IsNullOrEmpty(dbPassword))
+        {
+            loginFailed = true;
+        }
+        else
+        {
+            loginSuccess = true;
+        }
+}
+    private void navigateToCreateAccount()
+    {
+        NavigationManager.NavigateTo("/createaccount");
+    }
+}
+
+@if (loginFailed)
+{
+    <div class="alert">
+        Wrong email or password...
+    </div>
+}
+
+@if (loginSuccess)
+{
+    <div class="alert">
+        Logged In! 
+        <br />
+        Welcome, @dbFirstname @dbLastname
+    </div>
+}

@@ -26,7 +26,7 @@
 
             @foreach (var product in productList)
             {
-                if (sellingCardsLimit <= 3) //Makes sure it cant show more than 4 items
+                if (sellingCardsLimit <= 2) //Makes sure it cant show more than 4 items
                 {
                     sellingCardsLimit++;
                     <SellingCards SellingProduct="product"></SellingCards>
@@ -62,20 +62,12 @@
         <h1 id="repTitle">REPUTATION</h1>
 
         <div>
-            @if (CurrentUser.Reputation > 0)
-            {
                 <div class="star-rating">
                     @for (int i = 1; i <= 5; i++)
                     {
                         <span style="@(i <= CurrentUser.Reputation ? "color: gold;" : "color: #ccc;")" class="star">&#9733;</span>
                     }
                 </div>
-            }
-            else
-            {
-                <span>No reputation yet.</span>
-            }
-
         </div>
     </div>
 </div>
@@ -87,6 +79,7 @@
 @code {
     [Parameter]
     public string UserId { get; set; }
+    private string primaryKeyColumn;
 
     private int sellingCardsLimit = 0;
 
@@ -104,11 +97,10 @@
         connection = new NpgsqlConnection(connectionString);
 
         try
-
         {
             connection.Open();
 
-            string SelectSQL = $"SELECT * FROM userprofiles WHERE profileid = {UserId}";
+            string SelectSQL = $"SELECT * FROM userprofiles WHERE id = {UserId}";
             using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
             {
                 using (NpgsqlDataReader reader = command.ExecuteReader())
@@ -120,7 +112,7 @@
                         CurrentUser.Description = reader["description"].ToString();
                         CurrentUser.Joined = reader["joined"].ToString();
                         CurrentUser.Location = reader["location"].ToString();
-                        CurrentUser.ProfileId = (int)reader["profileid"];
+                        CurrentUser.ProfileId = (int)reader["id"];
                         CurrentUser.Reputation = (int)reader["reputation"];
 
 
@@ -140,7 +132,9 @@
                                 EANNumber = reader["ean_number"].ToString(),
                                 Brand = reader["brand"].ToString(),
                                 Model = reader["model"].ToString(),
-                                Series = reader["series"].ToString()
+                                Series = reader["series"].ToString(),
+                                ProductID = (int)reader["product_id"]
+
                             };
                         productList.Add(product);
                     }

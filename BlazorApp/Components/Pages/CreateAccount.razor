@@ -1,0 +1,176 @@
+﻿@page "/createaccount"
+@using Npgsql;
+
+<body>
+    <input @bind="Firstname" placeholder="Enter Firstname..." />
+    <input @bind="Lastname" placeholder="Enter Lastname..." />
+    <br />
+    <input @bind="Email" placeholder="Enter Email..." />
+    <br />
+    <input @bind="BirthDay" placeholder="Day" maxlength="2" size="2" />
+    <input @bind="BirthMonth" placeholder="Month" maxlength="2" size="2" />
+    <input @bind="BirthYear" placeholder="Year" maxlength="4" size="4" />
+    <input @bind="Location" placeholder="Enter City..."/>
+    <br />
+    <input @bind="Password" placeholder="Enter Password..." type="password" />
+    <input @bind="Phonenumber" placeholder="Enter Phonenumber..."/>
+    <br />
+    <input @bind="AcceptTos" type="checkbox" />
+    <label for="acceptTos">Accept Terms of Service</label>
+    <br />
+    <button @onclick="Create">Create</button>
+
+</body>
+
+@code {
+    private string Firstname;
+    private string Lastname;
+    private string Phonenumber;
+    private string BirthDay;
+    private string BirthMonth;
+    private string BirthYear;
+    private string Location;
+    private string Email;
+    private string Password;
+    private bool AcceptTos;
+
+    private bool showEmptyNotification = false;
+    private bool accountCreated = false;
+    private bool accountNotCreated = false;
+    private bool emailExists = false;
+
+    private List<string> inputFields = new List<string>();
+
+    private string JoinedDate { get; set; }
+
+    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+
+    private NpgsqlConnection connection;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+    }
+
+    private void Create()
+    {
+        inputFields.Add(Firstname);
+        inputFields.Add(Lastname);
+        inputFields.Add(Phonenumber);
+        inputFields.Add(BirthDay);
+        inputFields.Add(BirthMonth);
+        inputFields.Add(BirthYear);
+        inputFields.Add(Location);
+        inputFields.Add(Email);
+        inputFields.Add(Password);
+
+        showEmptyNotification = false;
+        connection = new NpgsqlConnection(connectionString);
+        JoinedDate = DateTime.Now.ToString("yyyy-MM-dd");
+
+        foreach (string inputField in inputFields)
+        {
+            if (!string.IsNullOrEmpty(inputField))
+            {
+                continue;
+            }
+            else
+            {
+                notifyEmpty();
+                return;
+            }
+        }
+        try
+        {
+            connection.Open();
+
+            string InsertSQL = $"INSERT INTO userprofiles (firstname, lastname, birthdate, reputation, email, password, phonenumber, termsofservice, location, joined, description) VALUES ('{Firstname}', '{Lastname}', '{BirthYear}-{BirthMonth}-{BirthDay}', '0', '{Email}',  crypt('{Password}', gen_salt('bf')), {Phonenumber}, {AcceptTos.ToString()}, '{Location}', '{JoinedDate}', '')";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(InsertSQL, connection))
+            {
+                command.ExecuteNonQuery();
+            }
+
+            Thread.Sleep(20);
+            accountCreated = CheckAccountCreated();
+        }
+        catch
+        {
+
+        }
+    }
+
+    private bool checkEmpty(string inputField)
+    {
+        if (!string.IsNullOrEmpty(inputField.Trim()))
+        {
+            return true;
+
+        } else
+        {
+            return false;
+        }
+    }
+
+    private bool CheckAccountCreated()
+    {
+        string confirmationSQL = $"SELECT * FROM userprofiles WHERE email = '{Email}'";
+        using (NpgsqlCommand command = new NpgsqlCommand(confirmationSQL, connection))
+        {
+            using (NpgsqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string email = reader["email"].ToString();
+
+                    if (email == Email)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        accountNotCreated = true;
+        return false;
+    }
+
+    private void notifyEmpty()
+    {
+        showEmptyNotification = true;
+    }
+}
+
+@if (showEmptyNotification)
+{
+    <div class="alert">
+        <span class="closebtn"></span>
+        Not all input fields are filled out
+    </div>
+}
+
+@if (accountCreated) 
+{
+    <div class="alert">
+        <span class="closebtn"></span>
+        Account created!
+    </div>
+}
+@if (accountNotCreated)
+{
+    <div class="alert">
+        <span class="closebtn"></span>
+        An Error Occurred.
+        <br />
+        Account not created!
+    </div>
+}
+
+@if (emailExists)
+{
+    <div class="alert">
+        <span class="closebtn"></span>
+        The chosen email is already used.
+    </div>
+}
+
