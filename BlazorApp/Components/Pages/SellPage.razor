@@ -1,6 +1,198 @@
 ﻿@page "/products/sellpage"
-<h3>SellPage</h3>
+@using Npgsql
+
+<h3>Choose A Product to sell</h3>
+
+<select @bind="product_type">
+    <option value="">-- Select --</option>
+    <option value="CPU">CPU/Processor</option>
+    <option value="GPU">Graphics Card/GPU</option>
+</select>
+
+@if (!string.IsNullOrEmpty(product_type))
+{
+    if (product_type == "CPU")
+    {
+<button @onclick="GoNext">Next</button>
+    }
+    else if (product_type == "GPU")
+    {
+<button @onclick="GoNextGPU">Next</button>
+    }
+}
+
+@if (showInputFields)
+{
+    <div>
+        <label>Brand: </label>
+        <input type="text" @bind="brand" />
+    </div>
+    <div>
+        <label>Series: </label>
+        <input type="text" @bind="series" />
+    </div>
+    <div>
+        <label>Model: </label>
+        <input type="text" @bind="model" />
+    </div>
+    <div>
+        <label>Product Type: </label>
+        <input type="text" @bind="product_type" disabled />
+    </div>
+    <div>
+        <label>Price: </label>
+        <input type="number" @bind="price" />
+    </div>
+    <div>
+        <label>Cores: </label>
+        <input type="number" @bind="cores" />
+    </div>
+    <div>
+        <label>Threads: </label>
+        <input type="number" @bind="threads" />
+    </div>
+    <div>
+        <label>Idle Clock Speed: </label>
+        <input type="text" @bind="idle_clock_speed" />
+    </div>
+    <div>
+        <label>Max Clock Speed: </label>
+        <input type="text" @bind="max_clock_speed" />
+    </div>
+    <div>
+        <label>Cache: </label>
+        <input type="text" @bind="cache" />
+    </div>
+    <div>
+        <label>Description: </label>
+        <input type="text" @bind="description" />
+    </div>
+    <button @onclick="SellProduct">Sell Product</button>
+
+
+@if (showGPUFields)
+{
+    <div>
+        <label>Brand: </label>
+        <input type="text" @bind="brand" />
+    </div>
+    <div>
+        <label>Series: </label>
+        <input type="text" @bind="series" />
+    </div>
+    <div>
+        <label>Model: </label>
+        <input type="text" @bind="model" />
+    </div>
+    <div>
+        <label>Product Type: </label>
+        <input type="text" @bind="product_type" disabled />
+    </div>
+    <div>
+        <label>Price: </label>
+        <input type="number" @bind="price" />
+    </div>
+    <div>
+        <label>VRAM: </label>
+        <input type="text" @bind="vram" />
+    </div>
+    <div>
+        <label>Ports: </label>
+        <input type="text" @bind="ports" />
+    </div>
+    <div>
+        <label>Description: </label>
+        <input type="text" @bind="description" />
+    </div>
+    <button @onclick="SellProduct">Sell Product</button>
+}
 
 @code {
+    string product_type;
+    bool showInputFields;
+    bool showGPUFields; // Add this variable to control the GPU form
+    string brand;
+    string series;
+    string model;
+    decimal price;
+    int vram; // Add this variable for the VRAM field
+    int cores;
+    int threads;
+    string idle_clock_speed;
+    string max_clock_speed;
+    string cache;
+    string description;
+    string ean_number; // Add this variable for the EAN number field
+    string ports; // Add this variable for the Ports field
+    string size; // Add this variable for the Size field
+    string successMessage;
 
+    void GoNext()
+    {
+        showInputFields = true;
+    }
+
+    void GoNextGPU()
+    {
+        showGPUFields = true;
+    }
+
+    private void SellProduct()
+    {
+        string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;"; // Replace with actual connection string
+
+        using (var connection = new NpgsqlConnection(connectionString))
+        {
+            connection.Open();
+
+            string sql;
+            if (product_type == "CPU")
+            {
+                sql = $"INSERT INTO products (brand, series, model, product_type, price, cores, threads, idle_clock_speed, max_clock_speed, cache, description) VALUES ('{brand}', '{series}', '{model}', '{product_type}', {price}, {cores}, {threads}, '{idle_clock_speed}', '{max_clock_speed}', '{cache}', '{description}')";
+            }
+            else 
+            {
+                sql = $"INSERT INTO products (brand, series, model, product_type, price, vram, ports, description) VALUES ('{brand}', '{series}', '{model}', '{product_type}', {price}, '{vram}', '{ports}', '{description}')";
+            }
+            using (var command = new NpgsqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@Brand", brand);
+                command.Parameters.AddWithValue("@Series", series);
+                command.Parameters.AddWithValue("@Model", model);
+                command.Parameters.AddWithValue("@SelectedProduct", product_type);
+                command.Parameters.AddWithValue("@Price", price);
+
+                if (product_type == "CPU")
+                {
+                    command.Parameters.AddWithValue("@Cores", cores);
+                    command.Parameters.AddWithValue("@Threads", threads);
+                    command.Parameters.AddWithValue("@idle_clock_speed", idle_clock_speed);
+                    command.Parameters.AddWithValue("@Max_clock_speed", max_clock_speed);
+                    command.Parameters.AddWithValue("@Cache", cache);
+                    command.Parameters.AddWithValue("@Description", description);
+                }
+                else if (product_type == "GPU")
+                {
+                    command.Parameters.AddWithValue("@VRAM", vram);
+                    command.Parameters.AddWithValue("@Ports", ports);
+                    command.Parameters.AddWithValue("@Description", description);
+                }
+
+                command.ExecuteNonQuery();
+            }
+
+            // Show success message
+            showInputFields = false; // Hide input fields after success
+            showGPUFields = false; // Hide GPU fields after success
+            successMessage = "Product successfully added!"; // Set a success message variable
+        }
+    }
+}
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success" role="alert">
+        @successMessage
+    </div>
 }

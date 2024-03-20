@@ -1,6 +1,7 @@
 ﻿@page "/products"
 @using Npgsql
 @using ProductClassLibrary
+@using ProductClassLibrary.Products
 @inject NavigationManager NavigationManager
 
 <PageTitle>Products</PageTitle>
@@ -53,7 +54,9 @@
                     <button type="button" class="btn-close" @onclick="CloseModal"></button>
                 </div>
                 <div class="modal-body">
-                    EAN Number: @selectedProduct.EANNumber
+                    <p><strong>Ports:</strong> @selectedProduct.Ports</p>
+                    <p><strong>VRAM: </strong> @selectedProduct.VRAM</p>
+                    <p><strong>Description: </strong>@selectedProduct.Description</p
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
@@ -116,7 +119,10 @@
                                 EANNumber = reader["ean_number"].ToString(),
                                 Brand = reader["brand"].ToString(),
                                 Model = reader["model"].ToString(),
-                                Series = reader["series"].ToString()
+                                Series = reader["series"].ToString(),
+                                Description = reader["description"].ToString()
+
+
                             };
 
                         products.Add(product);
