@@ -25,17 +25,18 @@
 @code {
     private string Firstname;
     private string Lastname;
-    private string Phonenumber { get; set; }
-    private string BirthDay { get; set; }
-    private string BirthMonth { get; set; }
-    private string BirthYear { get; set; }
-    private string Location { get; set; }
-    private string Email { get; set; }
-    private string Password { get; set; }
-    private bool AcceptTos { get; set; }
+    private string Phonenumber;
+    private string BirthDay;
+    private string BirthMonth;
+    private string BirthYear;
+    private string Location;
+    private string Email;
+    private string Password;
+    private bool AcceptTos;
 
     private bool showEmptyNotification = false;
     private bool accountCreated = false;
+    private bool accountNotCreated = false;
     private bool emailExists = false;
 
     private List<string> inputFields = new List<string>();
@@ -81,37 +82,18 @@
             }
         }
         try
-
         {
             connection.Open();
 
-            string SelectSQL = $"SELECT * FROM userprofiles WHERE email = '{Email}'";
-
-            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
-            {
-                using (NpgsqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string email = reader["email"].ToString();
-
-                        if (email == Email)
-                        {
-                            emailExists = true;
-                            return;
-                        }
-                    }
-                }
-                
-            }
-
-            string InsertSQL = $"INSERT INTO userprofiles (firstname, lastname, birthdate, reputation, email, password, phonenumber, termsofservice, location, joined, description) VALUES ('{Firstname}', '{Lastname}', '{BirthYear}-{BirthMonth}-{BirthDay}', '0', '{Email}', '{Password}', {Phonenumber}, {AcceptTos.ToString()}, '{Location}', '{JoinedDate}', '')";
+            string InsertSQL = $"INSERT INTO userprofiles (firstname, lastname, birthdate, reputation, email, password, phonenumber, termsofservice, location, joined, description) VALUES ('{Firstname}', '{Lastname}', '{BirthYear}-{BirthMonth}-{BirthDay}', '0', '{Email}',  crypt('{Password}', gen_salt('bf')), {Phonenumber}, {AcceptTos.ToString()}, '{Location}', '{JoinedDate}', '')";
 
             using (NpgsqlCommand command = new NpgsqlCommand(InsertSQL, connection))
             {
                 command.ExecuteNonQuery();
-                accountCreated = true;
             }
+
+            Thread.Sleep(20);
+            accountCreated = CheckAccountCreated();
         }
         catch
         {
@@ -129,6 +111,28 @@
         {
             return false;
         }
+    }
+
+    private bool CheckAccountCreated()
+    {
+        string confirmationSQL = $"SELECT * FROM userprofiles WHERE email = '{Email}'";
+        using (NpgsqlCommand command = new NpgsqlCommand(confirmationSQL, connection))
+        {
+            using (NpgsqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string email = reader["email"].ToString();
+
+                    if (email == Email)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        accountNotCreated = true;
+        return false;
     }
 
     private void notifyEmpty()
@@ -150,6 +154,15 @@
     <div class="alert">
         <span class="closebtn"></span>
         Account created!
+    </div>
+}
+@if (accountNotCreated)
+{
+    <div class="alert">
+        <span class="closebtn"></span>
+        An Error Occurred.
+        <br />
+        Account not created!
     </div>
 }
 
