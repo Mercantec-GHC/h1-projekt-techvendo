@@ -8,26 +8,49 @@
 
 
 @* TODO: style this fucker *@
-<div class="header d-flex justify-content-between align-items-center pt-3 text-center">
+<div class="header d-flex justify-content-center align-items-center pt-3 text-center">
     <h1 class="prod-title">Products</h1>
     <div class="sellpage-btn-container">
-        <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
     </div>
+</div>
+<button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
+
+
+
+<div class="sort-btn">
+    <button @onclick="ToggleSort">Sort:</button>
 </div>
 
 <div class="product_type">
     <label style="color: white;">Product type:</label>
     <select @bind="selectedTypeOption">
+        <option value=""></OPTION>
+        <option value="ALL">ALL</option>
         <option value="CPU">CPU</option>
         <option value="GPU">GPU</option>
     </select>
-    <button @onclick="ProductType">Toggle Direction</button>
 </div>
 
-<div class="sort-reset">
-    <label style="color: white;">Clear filter</label>
-    <button @onclick="ProductReset">Clear filter</button>
+
+<div class="brand">
+    <label style="color: white;">Brand:</label>
+    <select @bind="selectedBrandOption">
+        <option value=""></option>
+        @if (ListedBrands.Any())
+        {
+            ListedBrands.Clear();
+        }
+        @foreach (ProductClass product in products)
+        {
+            if (!ListedBrands.Contains(product.Brand))
+            {
+                <option value="@product.Brand">@product.Brand</option>
+            }
+            ListedBrands.Add(product.Brand);
+        }
+    </select>
 </div>
+
 
 <div class="sorting-options">
     <label style="color: white;">Sort By:</label>
@@ -35,8 +58,15 @@
         <option value="Price">Price</option>
         <option value="Brand">Brand</option>
     </select>
-    <button @onclick="ToggleSortDirection">Toggle Direction</button>
+    <button @onclick="ToggleSortDirection">Sort:</button>
 </div>
+
+
+<div class="sort-reset">
+    <label style="color: white;">Clear filter</label>
+    <button @onclick="ProductReset">Clear filter</button>
+</div>
+
 
 <section class="products-section">
     <div class="container">
@@ -80,7 +110,7 @@
 
                     <p><strong>Ports:</strong> @selectedProduct.Ports</p>
                     <p><strong>VRAM: </strong> @selectedProduct.VRAM</p>
-                    <p><strong>Description: </strong>@selectedProduct.Description</p
+                    <p><strong>Description: </strong>@selectedProduct.Description</p>
 
                 </div>
                 <div class="modal-footer">
@@ -92,14 +122,16 @@
 }
 
 @code {
-    private List<ProductClass> products;
+    private List<ProductClass> products = new List<ProductClass>();
     private List<ProductClass> sortedProducts = new List<ProductClass>();
-    private List<ProductClass> sortedtype;
-    private List<ProductClass> filteredProducts = new List<ProductClass>(); 
+    private List<ProductClass> filteredProducts = new List<ProductClass>();
+    List<ProductClass> productsToRemove = new List<ProductClass>();
+    private List<string> ListedBrands = new List<string>();
     private bool showModal = false;
-    private ProductClass selectedProduct;
+    private ProductClass selectedProduct = new ProductClass();
     private string selectedSortOption = "Price";
     private string selectedTypeOption = "Product_Type";
+    private string selectedBrandOption = "Brand";
     private bool sortAscending = true;
 
 
@@ -154,8 +186,8 @@
                                 Brand = reader["brand"].ToString(),
                                 Model = reader["model"].ToString(),
                                 Series = reader["series"].ToString(),
-                                Description = reader["description"].ToString()
-
+                                Description = reader["description"].ToString(),
+                                Product_Type = reader["product_type"].ToString()
 
 
                             };
@@ -194,26 +226,49 @@
         }
     }
 
-    void SortType()
-    {
-
-    }
-
     void ToggleSortDirection()
     {
         sortAscending = !sortAscending;
         SortProducts();
-
     }
 
-    void ProductType()
+    void ToggleSort()
     {
         sortedProducts.Clear();
-        foreach (ProductClass product in products)
+        productsToRemove.Clear();
+
+        if (selectedTypeOption == "ALL")
         {
-            if (product.Product_Type == selectedTypeOption)
+            foreach (ProductClass product in products)
             {
                 sortedProducts.Add(product);
+            }
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(selectedTypeOption))
+        {
+            foreach (ProductClass product in products)
+            {
+                if (product.Product_Type == selectedTypeOption)
+                {
+                    sortedProducts.Add(product);
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(selectedBrandOption))
+        {
+            foreach (ProductClass product in sortedProducts)
+            {
+                if (product.Brand != selectedBrandOption)
+                {
+                    productsToRemove.Add(product);
+                }
+            }
+            foreach (ProductClass productToRemove in productsToRemove)
+            {
+                sortedProducts.Remove(productToRemove);
             }
         }
     }
@@ -234,8 +289,12 @@
     }
 
     .prod-title {
-        color: white;
-       text-align: right;
+       margin-top: 15px;
+       color: white;
+       text-align: center;
+       outline: 2px solid white;
+       outline-offset: 17px;
+       border-radius: 3px;
     }
 
     .card-body, .card {
@@ -250,18 +309,67 @@
         color: white;
     }
 
-    .sellpage-btn {
+     .sellpage-btn {
         background-color: #808080; /* a grayish color */
         border-radius: 15px; /* makes the button more rounded */
         color: white; /* text color */
         padding: 10px 20px; /* button size */
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
+        text-align: right;
         font-size: 16px;
         margin: 15px 15px;
-        cursor: pointer;
-        position: relative; 
+        cursor: pointer; 
         right: 150%;
+        
     }
+
+    /* Styling for sort button */
+    .sort-btn button {
+        background-color: #226990;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    /* Styling for product type select */
+    .product_type select {
+        padding: 8px;
+        border-radius: 5px;
+    }
+
+    /* Styling for brand select */
+    .brand select {
+        padding: 8px;
+        border-radius: 5px;
+    }
+
+    /* Styling for sorting options */
+    .sorting-options select {
+        padding: 8px;
+        border-radius: 5px;
+    }
+
+    .sorting-options button {
+        background-color: #226990;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+    /* Styling for reset button */
+    .sort-reset button {
+        background-color: dimgrey;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+
+
 </style>
