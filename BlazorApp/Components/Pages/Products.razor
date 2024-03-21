@@ -7,7 +7,7 @@
 <PageTitle>Products</PageTitle>
 
 
-@* TODO: style this fucker *@
+@* Header/title name/page name*@
 <div class="header d-flex justify-content-center align-items-center pt-3 text-center">
     <h1 class="prod-title">Products</h1>
     <div class="sellpage-btn-container">
@@ -16,22 +16,29 @@
 <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
 
 
-
+@*making the sort btn*@
 <div class="sort-btn">
     <button @onclick="ToggleSort">Sort:</button>
 </div>
 
+@*Sorting for product type, like cpu, gpu, motherboard, etc. (dropdown menu)*@
 <div class="product_type">
     <label style="color: white;">Product type:</label>
     <select @bind="selectedTypeOption">
         <option value=""></OPTION>
-        <option value="ALL">ALL</option>
         <option value="CPU">CPU</option>
         <option value="GPU">GPU</option>
+        <option value="Motherboard">Motherboard</option>
+        <option value="RAM">RAM</option>
+        <option value="Storage">Storage</option>
+        <option value="PowerSupply">Power Supply</option>
+        <option value="CPUCooler">CPU Cooler</option>
+        <option value="ThermalPaste">Thermal Paste</option>
     </select>
 </div>
 
 
+@* Sorting for brand (dropdown menu)*@
 <div class="brand">
     <label style="color: white;">Brand:</label>
     <select @bind="selectedBrandOption">
@@ -42,7 +49,7 @@
         }
         @foreach (ProductClass product in products)
         {
-            if (!ListedBrands.Contains(product.Brand))
+            if (!ListedBrands.Contains(product.Brand.ToUpper()))
             {
                 <option value="@product.Brand">@product.Brand</option>
             }
@@ -52,6 +59,7 @@
 </div>
 
 
+@*sorting by brice or alphabetic branding (dropdown menu)*@
 <div class="sorting-options">
     <label style="color: white;">Sort By:</label>
     <select @bind="selectedSortOption">
@@ -62,12 +70,14 @@
 </div>
 
 
+@*Clearing what you sorted (button)*@
 <div class="sort-reset">
     <label style="color: white;">Clear filter</label>
     <button @onclick="ProductReset">Clear filter</button>
 </div>
 
 
+@*Cards/prodcut layout*@
 <section class="products-section">
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
@@ -97,6 +107,8 @@
     </div>
 </section>
 
+
+@*When you click view you get product information*@
 @if (showModal)
 {
     <div class="modal" tabindex="-1" style="display:block;">
@@ -122,6 +134,7 @@
 }
 
 @code {
+    @*List to make layout, sorting, and view box*@
     private List<ProductClass> products = new List<ProductClass>();
     private List<ProductClass> productsToShow = new List<ProductClass>();
     private List<ProductClass> filteredProducts = new List<ProductClass>();
@@ -135,27 +148,30 @@
     private bool sortAscending = true;
 
 
-
+    @*private void to redirect to sellpage*@
     private void NavigateToSellPage()
     {
         NavigationManager.NavigateTo("/products/sellpage");
     }
 
-
+    @*function for the view boxes to get information*@
     void OpenModal(ProductClass product)
     {
         selectedProduct = product;
         showModal = true;
     }
 
+    @*Making sure you can closer the information box*@
     void CloseModal()
     {
         showModal = false;
     }
 
+    @*connection to our sql server*@
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
     private NpgsqlConnection connection;
 
+    @*getting the information form our sql server*@
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -234,11 +250,50 @@
 
     void ToggleSort()
     {
-        productsToShow = products;
+        productsToShow.Clear();
+
+        foreach (ProductClass product in products)
+        {
+            productsToShow.Add(product);
+        }
+
+        productsToRemove.Clear();
+
+        if (selectedTypeOption == "Product_Type")
+        {
+            selectedTypeOption = "";
+        }
 
         if (!string.IsNullOrEmpty(selectedTypeOption))
         {
-            productsToShow = productsToShow.Where(product => product.Product_Type.ToUpper() == selectedTypeOption.ToUpper()).ToList();
+            foreach (ProductClass product in products)
+            {
+                if (product.Product_Type != selectedTypeOption)
+                {
+                    productsToRemove.Add(product);
+                }
+            }
+        }
+
+        if (selectedBrandOption == "Brand")
+        {
+            selectedBrandOption = "";
+        } 
+
+        if (!string.IsNullOrEmpty(selectedBrandOption))
+        {
+            foreach (ProductClass product in products)
+            {
+                if (product.Brand != selectedBrandOption)
+                {
+                    productsToRemove.Add(product);
+                }
+            }
+        }
+
+        foreach (ProductClass product in productsToRemove)
+        {
+            productsToShow.Remove(product);
         }
     }
 
