@@ -1,31 +1,25 @@
 ﻿@page "/products/sellpage"
 @using Npgsql
 
+
 <h3>Choose A Product to sell</h3>
 
-<select @bind="product_type">
+<select @bind="selectedProductType">
     <option value="">-- Select --</option>
     <option value="CPU">CPU/Processor</option>
     <option value="GPU">Graphics Card/GPU</option>
 </select>
 
-@if (!string.IsNullOrEmpty(product_type))
-{
-    if (product_type == "CPU")
-    {
-<button @onclick="GoNext">Next</button>
-    }
-    else if (product_type == "GPU")
-    {
-<button @onclick="GoNextGPU">Next</button>
-    }
-}
-
-@if (showInputFields)
+@if (selectedProductType == ProductType.CPU)
 {
     <div>
         <label>Brand: </label>
-        <input type="text" @bind="brand" />
+        <select @bind="brand">
+            <option value="">-- Select --</option>
+            <option value="Intel">Intel</option>
+            <option value="AMD">AMD</option>
+            <option value="Other">Other</option>
+        </select>
     </div>
     <div>
         <label>Series: </label>
@@ -37,7 +31,7 @@
     </div>
     <div>
         <label>Product Type: </label>
-        <input type="text" @bind="product_type" disabled />
+        <input type="text" @bind="selectedProductType" disabled />
     </div>
     <div>
         <label>Price: </label>
@@ -69,12 +63,22 @@
     </div>
     <button @onclick="SellProduct">Sell Product</button>
 
-
-@if (showGPUFields)
+}
+else if (selectedProductType == ProductType.GPU)
 {
     <div>
         <label>Brand: </label>
-        <input type="text" @bind="brand" />
+        <select @bind="brand">
+            <option value="">-- Select --</option>
+            <option value="NVIDIA">NVIDIA</option>
+            <option value="Asus">Asus</option>
+            <option value="MSI">MSI</option>
+            <option value="PNY">PNY</option>
+            <option value="AMD">AMD</option>
+            <option value="Gigabyte">Gigabyte</option>
+            <option value="Zotac">Zotac</option>
+            <option value="Other">Other</option>
+        </select>
     </div>
     <div>
         <label>Series: </label>
@@ -86,7 +90,7 @@
     </div>
     <div>
         <label>Product Type: </label>
-        <input type="text" @bind="product_type" disabled />
+        <input type="text" @bind="selectedProductType" disabled />
     </div>
     <div>
         <label>Price: </label>
@@ -104,8 +108,9 @@
         <label>Description: </label>
         <input type="text" @bind="description" />
     </div>
+
     <button @onclick="SellProduct">Sell Product</button>
-}
+
 
 @code {
     string product_type;
@@ -127,15 +132,22 @@
     string size; // Add this variable for the Size field
     string successMessage;
 
-    void GoNext()
+
+    enum ProductType
     {
-        showInputFields = true;
+        None,
+        CPU,
+        GPU
     }
 
-    void GoNextGPU()
+    ProductType selectedProductType = ProductType.None;
+    ProductType currentProductType = ProductType.None;
+
+    void ShowForm(ProductType productType)
     {
-        showGPUFields = true;
+        currentProductType = productType;
     }
+
 
     private void SellProduct()
     {
@@ -159,7 +171,7 @@
                 command.Parameters.AddWithValue("@Brand", brand);
                 command.Parameters.AddWithValue("@Series", series);
                 command.Parameters.AddWithValue("@Model", model);
-                command.Parameters.AddWithValue("@SelectedProduct", product_type);
+                command.Parameters.AddWithValue("@SelectedProduct", selectedProductType.ToString());
                 command.Parameters.AddWithValue("@Price", price);
 
                 if (product_type == "CPU")
