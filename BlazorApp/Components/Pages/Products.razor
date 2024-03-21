@@ -58,7 +58,7 @@
         <option value="Price">Price</option>
         <option value="Brand">Brand</option>
     </select>
-    <button @onclick="ToggleSortDirection">Sort:</button>
+    <button @onclick="ToggleSortDirection">Sort: 1</button>
 </div>
 
 
@@ -71,7 +71,7 @@
 <section class="products-section">
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            @foreach (var product in sortedProducts)
+            @foreach (var product in productsToShow)
             {
                 <div class="col">
                     <div class="card shadow-sm">
@@ -123,9 +123,9 @@
 
 @code {
     private List<ProductClass> products = new List<ProductClass>();
-    private List<ProductClass> sortedProducts = new List<ProductClass>();
+    private List<ProductClass> productsToShow = new List<ProductClass>();
     private List<ProductClass> filteredProducts = new List<ProductClass>();
-    List<ProductClass> productsToRemove = new List<ProductClass>();
+    private List<ProductClass> productsToRemove = new List<ProductClass>();
     private List<string> ListedBrands = new List<string>();
     private bool showModal = false;
     private ProductClass selectedProduct = new ProductClass();
@@ -192,7 +192,7 @@
 
                             };
                         products.Add(product);
-                        sortedProducts.Add(product);
+                        productsToShow.Add(product);
                     }
                 }
             }
@@ -218,10 +218,10 @@
         switch (selectedSortOption)
         {
             case "Price":
-                sortedProducts = sortAscending ? sortedProducts.OrderBy(p => p.Price).ToList() : sortedProducts.OrderByDescending(p => p.Price).ToList();
+                productsToShow = sortAscending ? productsToShow.OrderBy(p => p.Price).ToList() : productsToShow.OrderByDescending(p => p.Price).ToList();
                 break;
             case "Brand":
-                sortedProducts = sortAscending ? sortedProducts.OrderBy(p => p.Brand).ToList() : sortedProducts.OrderByDescending(p => p.Brand).ToList();
+                productsToShow = sortAscending ? productsToShow.OrderBy(p => p.Brand).ToList() : productsToShow.OrderByDescending(p => p.Brand).ToList();
                 break;
         }
     }
@@ -234,142 +234,106 @@
 
     void ToggleSort()
     {
-        sortedProducts.Clear();
-        productsToRemove.Clear();
-
-        if (selectedTypeOption == "ALL")
-        {
-            foreach (ProductClass product in products)
-            {
-                sortedProducts.Add(product);
-            }
-            return;
-        }
+        productsToShow = products;
 
         if (!string.IsNullOrEmpty(selectedTypeOption))
         {
-            foreach (ProductClass product in products)
-            {
-                if (product.Product_Type == selectedTypeOption)
-                {
-                    sortedProducts.Add(product);
-                }
-            }
-        }
-
-        if (!string.IsNullOrEmpty(selectedBrandOption))
-        {
-            foreach (ProductClass product in sortedProducts)
-            {
-                if (product.Brand != selectedBrandOption)
-                {
-                    productsToRemove.Add(product);
-                }
-            }
-            foreach (ProductClass productToRemove in productsToRemove)
-            {
-                sortedProducts.Remove(productToRemove);
-            }
+            productsToShow = productsToShow.Where(product => product.Product_Type.ToUpper() == selectedTypeOption.ToUpper()).ToList();
         }
     }
 
     void ProductReset()
     {
-        sortedProducts.Clear();
+        productsToShow.Clear();
         foreach (ProductClass product in products)
         {
-            sortedProducts.Add(product);
+            productsToShow.Add(product);
         }
     }
 }
 
-<style>
-    body {
-        background-color: #000;
-    }
+<style>body {
+    background-color: #000;
+}
 
-    .prod-title {
-       margin-top: 15px;
-       color: white;
-       text-align: center;
-       outline: 2px solid white;
-       outline-offset: 17px;
-       border-radius: 3px;
-    }
+.prod-title {
+    margin-top: 15px;
+    color: white;
+    text-align: center;
+    outline: 2px solid white;
+    outline-offset: 17px;
+    border-radius: 3px;
+}
 
-    .card-body, .card {
-        background-color: #525050;
-        color: white;
-        padding: 20px 20px;
-        margin-bottom: 20px;
-        border-radius: 10px;
-    }
+.card-body, .card {
+    background-color: #525050;
+    color: white;
+    padding: 20px 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
 
-    .btn-outline-secondary {
-        color: white;
-    }
+.btn-outline-secondary {
+    color: white;
+}
 
-     .sellpage-btn {
-        background-color: #808080; /* a grayish color */
-        border-radius: 15px; /* makes the button more rounded */
-        color: white; /* text color */
-        padding: 10px 20px; /* button size */
-        text-align: right;
-        font-size: 16px;
-        margin: 15px 15px;
-        cursor: pointer; 
-        right: 150%;
-        
-    }
+.sellpage-btn {
+    background-color: #808080; /* a grayish color */
+    border-radius: 15px; /* makes the button more rounded */
+    color: white; /* text color */
+    padding: 10px 20px; /* button size */
+    text-align: right;
+    font-size: 16px;
+    margin: 15px 15px;
+    cursor: pointer;
+    right: 150%;
+}
 
-    /* Styling for sort button */
-    .sort-btn button {
-        background-color: #226990;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+/* Styling for sort button */
+.sort-btn button {
+    background-color: #226990;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-    /* Styling for product type select */
-    .product_type select {
-        padding: 8px;
-        border-radius: 5px;
-    }
+/* Styling for product type select */
+.product_type select {
+    padding: 8px;
+    border-radius: 5px;
+}
 
-    /* Styling for brand select */
-    .brand select {
-        padding: 8px;
-        border-radius: 5px;
-    }
+/* Styling for brand select */
+.brand select {
+    padding: 8px;
+    border-radius: 5px;
+}
 
-    /* Styling for sorting options */
-    .sorting-options select {
-        padding: 8px;
-        border-radius: 5px;
-    }
+/* Styling for sorting options */
+.sorting-options select {
+    padding: 8px;
+    border-radius: 5px;
+}
 
-    .sorting-options button {
-        background-color: #226990;
-        color: white;
-        padding: 8px 16px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-left: 10px;
-    }
+.sorting-options button {
+    background-color: #226990;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
 
-    /* Styling for reset button */
-    .sort-reset button {
-        background-color: dimgrey;
-        color: white;
-        padding: 8px 16px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-
-
+/* Styling for reset button */
+.sort-reset button {
+    background-color: dimgrey;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 </style>
