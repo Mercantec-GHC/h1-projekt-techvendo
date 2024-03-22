@@ -10,11 +10,12 @@
 @* Header/title name/page name*@
 <div class="header d-flex justify-content-center align-items-center pt-3 text-center">
     <h1 class="prod-title">Products</h1>
-    <div class="sellpage-btn-container">
     </div>
-</div>
-<button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
 
+<nav class="nav-bar">
+    <div class="sellpage-btn-container"></div>
+    <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
+</nav>
 
 @*making the sort btn*@
 <div class="sort-btn">
@@ -66,7 +67,7 @@
         <option value="Price">Price</option>
         <option value="Brand">Brand</option>
     </select>
-    <button @onclick="ToggleSortDirection">Sort: 1</button>
+    <button @onclick="ToggleSortDirection">Sort: </button>
 </div>
 
 
@@ -75,7 +76,6 @@
     <label style="color: white;">Clear filter</label>
     <button @onclick="ProductReset">Clear filter</button>
 </div>
-
 
 @*Cards/prodcut layout*@
 <section class="products-section">
@@ -133,6 +133,7 @@
     </div>
 }
 
+
 @code {
     @*List to make layout, sorting, and view box*@
     private List<ProductClass> products = new List<ProductClass>();
@@ -141,6 +142,7 @@
     private List<ProductClass> productsToRemove = new List<ProductClass>();
     private List<string> ListedBrands = new List<string>();
     private bool showModal = false;
+    private bool sortModal = false;
     private ProductClass selectedProduct = new ProductClass();
     private string selectedSortOption = "Price";
     private string selectedTypeOption = "Product_Type";
@@ -307,17 +309,34 @@
     }
 }
 
-<style>body {
-    background-color: #000;
+<style>
+
+     body {
+        background-color: #111111;
+        overflow-x: hidden;
+}
+
+.nav-bar {
+  float: left;
+  top: 75px;
+  left: 0;
+  width: 20%;
+ /* A higher z-index ensures the navigation bar is on top of other elements */
+  margin right: 20px;
+  align-content: center;
+}
+
+.card{
+    width:425px;
+    height:500px;
+}
+
+.products-section {
+  
 }
 
 .prod-title {
-    margin-top: 15px;
-    color: white;
-    text-align: center;
-    outline: 2px solid white;
-    outline-offset: 17px;
-    border-radius: 3px;
+    color:white;
 }
 
 .card-body, .card {
@@ -325,70 +344,55 @@
     color: white;
     padding: 20px 20px;
     margin-bottom: 20px;
-    border-radius: 10px;
+    border-radius: 10px
 }
 
 .btn-outline-secondary {
+    background-color:grey;
     color: white;
+    box-shadow: 3px 4px 3px rgba(0, 0, 0, 0.2);
 }
 
 .sellpage-btn {
-    background-color: #808080; /* a grayish color */
-    border-radius: 15px; /* makes the button more rounded */
-    color: white; /* text color */
-    padding: 10px 20px; /* button size */
-    text-align: right;
-    font-size: 16px;
-    margin: 15px 15px;
-    cursor: pointer;
-    right: 150%;
+ border-radius: 5px;
+ background-color: #226990;
+    color: white;
+ 
 }
 
 /* Styling for sort button */
 .sort-btn button {
-    background-color: #226990;
+   border-radius:5px;
+   margin: 10px;
+   background-color: #226990;
     color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
 /* Styling for product type select */
 .product_type select {
-    padding: 8px;
     border-radius: 5px;
 }
 
 /* Styling for brand select */
 .brand select {
-    padding: 8px;
     border-radius: 5px;
 }
 
 /* Styling for sorting options */
 .sorting-options select {
-    padding: 8px;
     border-radius: 5px;
 }
 
 .sorting-options button {
+    border-radius: 5px;
     background-color: #226990;
     color: white;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 10px;
 }
 
 /* Styling for reset button */
 .sort-reset button {
-    background-color: dimgrey;
-    color: white;
-    padding: 8px 16px;
-    border: none;
     border-radius: 5px;
-    cursor: pointer;
+    background-color: #226990;
+    color: white;
 }
 </style>
