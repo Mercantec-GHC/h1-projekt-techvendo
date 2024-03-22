@@ -12,8 +12,6 @@ namespace ProductClassLibrary.Products
         public int MaxMemory { get; set; }
         public int MaxMemorySlots { get; set; }
         public string MemoryType { get; set; }
-        public int IdleBusClock { get; set; }
-        public int MaxBusClock { get; set; }
         public string AudioPorts { get; set; }
         public double LANInterface {  get; set; }
         public string Connections { get; set; }

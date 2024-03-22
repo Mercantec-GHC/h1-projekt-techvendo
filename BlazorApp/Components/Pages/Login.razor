@@ -3,15 +3,36 @@
 @inject NavigationManager NavigationManager
 
 <body>
-    <input @bind="Email" placeholder="Enter Email..."/>
-    <br />
-    <input @bind="Password" placeholder="Enter Password..." type="password"/>
-    <br />
-    <button @onclick="loginCheck">Login</button>
-    <br />
-    <a @onclick="navigateToCreateAccount">Create a new account</a>
 </body>
 
+<div class="container">
+    <h1 class="loginTitle">LOG IN</h1>
+    <div class="EmailPassword">
+        <input class="email" @bind="Email" placeholder="Enter Email..." />
+        <br />
+        <input class="password" @bind="Password" placeholder="Enter Password..." type="password" />
+        <br />
+    </div>
+    <button class="login-btn" @onclick="loginCheck">Login</button>
+    <br />
+    <a class="createNew" @onclick="navigateToCreateAccount">Create a new account</a>
+</div>
+
+@if (loginFailed)
+{
+    <div class="alert">
+        Wrong email or password...
+    </div>
+}
+
+@if (loginSuccess)
+{
+    <div class="success">
+        Logged In!
+        <br />
+        Welcome, @dbFirstname @dbLastname
+    </div>
+}
 
 @code {
     private string Email;
@@ -51,13 +72,14 @@
             {
                 while (reader.Read())
                 {
-                       dbEmail = reader["email"].ToString();
-                       dbPassword = reader["password"].ToString();
-                       dbFirstname = reader["firstname"].ToString();
-                       dbLastname = reader["lastname"].ToString();
+                    dbEmail = reader["email"].ToString();
+                    dbPassword = reader["password"].ToString();
+                    dbFirstname = reader["firstname"].ToString();
+                    dbLastname = reader["lastname"].ToString();
                 }
             }
         }
+        Thread.Sleep(800);
 
         if (string.IsNullOrEmpty(dbEmail) && string.IsNullOrEmpty(dbPassword))
         {
@@ -74,18 +96,4 @@
     }
 }
 
-@if (loginFailed)
-{
-    <div class="alert">
-        Wrong email or password...
-    </div>
-}
 
-@if (loginSuccess)
-{
-    <div class="alert">
-        Logged In! 
-        <br />
-        Welcome, @dbFirstname @dbLastname
-    </div>
-}
