@@ -12,18 +12,17 @@
     <h1 class="prod-title">Products</h1>
     </div>
 
-<nav class="nav-bar">
-    <div class="sellpage-btn-container"></div>
-    <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
-</nav>
+
 
 @*making the sort btn*@
-<div class="sort-btn">
+<div class="sort-btn d-flex align-content-center align-items-center pt-3 text-center">
     <button @onclick="ToggleSort">Sort:</button>
+    <div class="sellpage-btn-container"></div>
+    <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
 </div>
 
 @*Sorting for product type, like cpu, gpu, motherboard, etc. (dropdown menu)*@
-<div class="product_type">
+@* <div class="product_type">
     <label style="color: white;">Product type:</label>
     <select @bind="selectedTypeOption">
         <option value=""></OPTION>
@@ -36,11 +35,11 @@
         <option value="CPUCooler">CPU Cooler</option>
         <option value="ThermalPaste">Thermal Paste</option>
     </select>
-</div>
+</div> *@
 
 
 @* Sorting for brand (dropdown menu)*@
-<div class="brand">
+@* <div class="brand">
     <label style="color: white;">Brand:</label>
     <select @bind="selectedBrandOption">
         <option value=""></option>
@@ -57,26 +56,26 @@
             ListedBrands.Add(product.Brand);
         }
     </select>
-</div>
+</div> *@
 
 
 @*sorting by brice or alphabetic branding (dropdown menu)*@
-<div class="sorting-options">
+@* <div class="sorting-options">
     <label style="color: white;">Sort By:</label>
     <select @bind="selectedSortOption">
         <option value="Price">Price</option>
         <option value="Brand">Brand</option>
     </select>
     <button @onclick="ToggleSortDirection">Sort: </button>
-</div>
+</div> *@
 
 
 @*Clearing what you sorted (button)*@
-<div class="sort-reset">
+@* <div class="sort-reset">
     <label style="color: white;">Clear filter</label>
     <button @onclick="ProductReset">Clear filter</button>
 </div>
-
+ *@
 @*Cards/prodcut layout*@
 <section class="products-section">
     <div class="container">
@@ -133,6 +132,74 @@
     </div>
 }
 
+@if (sortModal)
+{
+    <div class="modal" tabindex="-1" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sort Products</h5>
+                    <button type="button" class="btn-close" @onclick="CloseSortModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="sort-by-type">
+                        <label style="color: black;">Sort By Type:</label>
+                        <select @bind="selectedTypeOption">
+                            <option value=""></OPTION>
+                            <option value="CPU">CPU</option>
+                            <option value="GPU">GPU</option>
+                            <option value="Motherboard">Motherboard</option>
+                            <option value="RAM">RAM</option>
+                            <option value="Storage">Storage</option>
+                            <option value="PowerSupply">Power Supply</option>
+                            <option value="CPUCooler">CPU Cooler</option>
+                            <option value="ThermalPaste">Thermal Paste</option>
+                            </select>
+                    </div>
+                    <div class="sort-by-brand">
+                        <label style="color: black;">Sort By Brand:</label>
+                        <select @bind="selectedBrandOption">
+                            <option value=""></option>
+                                @if (ListedBrands.Any())
+                                {
+                                    ListedBrands.Clear();
+                                }
+                                @foreach (ProductClass product in products)
+                                {
+                                    if (!ListedBrands.Contains(product.Brand.ToUpper()))
+                                    {
+                                        <option value="@product.Brand">@product.Brand</option>
+                                    }
+                                    ListedBrands.Add(product.Brand);
+                                }
+                            </select>
+                    </div>
+
+                    <div class="sorting-options">
+                    <label style="color: white;">Sort By:</label>
+                    <select @bind="selectedSortOption">
+                        <option value="Price">Price</option>
+                        <option value="Brand">Brand</option>
+                    </select>
+                        <button @onclick="ToggleSortDirection">Sort: </button>
+                    </div>
+
+                    <div class="sort-reset">
+                        <label style="color: white;">Clear filter</label>
+                        <button @onclick="ProductReset">Clear filter</button>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseSortModal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="ApplySort">Apply Sort</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
 
 @code {
     @*List to make layout, sorting, and view box*@
@@ -168,6 +235,64 @@
     {
         showModal = false;
     }
+
+    void ToggleSort()
+{
+    sortModal = !sortModal;
+}
+
+void CloseSortModal()
+{
+    sortModal = false;
+}
+
+void ApplySort()
+{
+    productsToShow.Clear();
+
+    foreach (ProductClass product in products)
+    {
+        productsToShow.Add(product);
+    }
+
+    productsToRemove.Clear();
+
+    // Filter by Product Type (if selected)
+    if (!string.IsNullOrEmpty(selectedTypeOption))
+    {
+        foreach (ProductClass product in productsToShow)
+        {
+            if (product.Product_Type != selectedTypeOption)
+            {
+                productsToRemove.Add(product);
+            }
+        }
+    }
+
+    // Filter by Brand (if selected)
+    if (!string.IsNullOrEmpty(selectedBrandOption))
+    {
+        foreach (ProductClass product in productsToShow)
+        {
+            if (product.Brand != selectedBrandOption)
+            {
+                productsToRemove.Add(product);
+            }
+        }
+    }
+
+    // Apply Sort Order (ascending or descending)
+    productsToShow = sortAscending ? productsToShow.OrderBy(p => p.Price).ToList() : productsToShow.OrderByDescending(p => p.Price).ToList();
+
+    // Remove filtered products from the displayed list
+    foreach (ProductClass product in productsToRemove)
+    {
+        productsToShow.Remove(product);
+    }
+
+    sortModal = false; // Close the sorting modal after applying filters
+}
+
 
     @*connection to our sql server*@
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
@@ -250,7 +375,7 @@
         SortProducts();
     }
 
-    void ToggleSort()
+    void ToggleSort2()
     {
         productsToShow.Clear();
 
@@ -310,12 +435,13 @@
 }
 
 <style>
-
      body {
         background-color: #111111;
         overflow-x: hidden;
 }
-
+.sort-btn{
+    align-self:right;
+}
 .nav-bar {
   float: left;
   top: 75px;
@@ -324,15 +450,6 @@
  /* A higher z-index ensures the navigation bar is on top of other elements */
   margin right: 20px;
   align-content: center;
-}
-
-.card{
-    width:425px;
-    height:500px;
-}
-
-.products-section {
-  
 }
 
 .prod-title {
