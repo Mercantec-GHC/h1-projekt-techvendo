@@ -21,61 +21,7 @@
     <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
 </div>
 
-@*Sorting for product type, like cpu, gpu, motherboard, etc. (dropdown menu)*@
-@* <div class="product_type">
-    <label style="color: white;">Product type:</label>
-    <select @bind="selectedTypeOption">
-        <option value=""></OPTION>
-        <option value="CPU">CPU</option>
-        <option value="GPU">GPU</option>
-        <option value="Motherboard">Motherboard</option>
-        <option value="RAM">RAM</option>
-        <option value="Storage">Storage</option>
-        <option value="PowerSupply">Power Supply</option>
-        <option value="CPUCooler">CPU Cooler</option>
-        <option value="ThermalPaste">Thermal Paste</option>
-    </select>
-</div> *@
 
-
-@* Sorting for brand (dropdown menu)*@
-@* <div class="brand">
-    <label style="color: white;">Brand:</label>
-    <select @bind="selectedBrandOption">
-        <option value=""></option>
-        @if (ListedBrands.Any())
-        {
-            ListedBrands.Clear();
-        }
-        @foreach (ProductClass product in products)
-        {
-            if (!ListedBrands.Contains(product.Brand.ToUpper()))
-            {
-                <option value="@product.Brand">@product.Brand</option>
-            }
-            ListedBrands.Add(product.Brand);
-        }
-    </select>
-</div> *@
-
-
-@*sorting by brice or alphabetic branding (dropdown menu)*@
-@* <div class="sorting-options">
-    <label style="color: white;">Sort By:</label>
-    <select @bind="selectedSortOption">
-        <option value="Price">Price</option>
-        <option value="Brand">Brand</option>
-    </select>
-    <button @onclick="ToggleSortDirection">Sort: </button>
-</div> *@
-
-
-@*Clearing what you sorted (button)*@
-@* <div class="sort-reset">
-    <label style="color: white;">Clear filter</label>
-    <button @onclick="ProductReset">Clear filter</button>
-</div>
- *@
 @*Cards/prodcut layout*@
 <section class="products-section">
     <div class="container">
@@ -166,11 +112,12 @@
                                 }
                                 @foreach (ProductClass product in products)
                                 {
-                                    if (!ListedBrands.Contains(product.Brand.ToUpper()))
+                                    if (!ListedBrands.Contains(product.Brand.ToLower()))
                                     {
                                         <option value="@product.Brand">@product.Brand</option>
+                                        ListedBrands.Add(product.Brand.ToLower());
                                     }
-                                    ListedBrands.Add(product.Brand);
+                                    
                                 }
                             </select>
                     </div>
@@ -268,6 +215,11 @@ void ApplySort()
             }
         }
     }
+
+    if (selectedBrandOption == "Brand") 
+        {
+            selectedBrandOption = "";
+        }
 
     // Filter by Brand (if selected)
     if (!string.IsNullOrEmpty(selectedBrandOption))
@@ -440,16 +392,8 @@ void ApplySort()
         overflow-x: hidden;
 }
 .sort-btn{
-    align-self:right;
-}
-.nav-bar {
-  float: left;
-  top: 75px;
-  left: 0;
-  width: 20%;
- /* A higher z-index ensures the navigation bar is on top of other elements */
-  margin right: 20px;
-  align-content: center;
+    position: relative;
+    left:295px;
 }
 
 .prod-title {
