@@ -17,8 +17,9 @@
 @*making the sort btn*@
 <div class="sort-btn d-flex align-content-center align-items-center pt-3 text-center">
     <button @onclick="ToggleSort">Sort:</button>
-    <div class="sellpage-btn-container"></div>
+    <div class="sellpage-btn-container">
     <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
+    </div>
 </div>
 
 
@@ -415,7 +416,7 @@ void ApplySort()
 }
 
 .sellpage-btn {
- border-radius: 5px;
+ border-radius:5px;
  background-color: #226990;
     color: white;
  
