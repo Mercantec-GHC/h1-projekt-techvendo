@@ -1,26 +1,68 @@
 ﻿@page "/createaccount"
 @using Npgsql;
+@inject NavigationManager NavigationManager
 
 <body>
-    <input @bind="Firstname" placeholder="Enter Firstname..." />
-    <input @bind="Lastname" placeholder="Enter Lastname..." />
-    <br />
-    <input @bind="Email" placeholder="Enter Email..." />
-    <br />
-    <input @bind="BirthDay" placeholder="Day" maxlength="2" size="2" />
-    <input @bind="BirthMonth" placeholder="Month" maxlength="2" size="2" />
-    <input @bind="BirthYear" placeholder="Year" maxlength="4" size="4" />
-    <input @bind="Location" placeholder="Enter City..."/>
-    <br />
-    <input @bind="Password" placeholder="Enter Password..." type="password" />
-    <input @bind="Phonenumber" placeholder="Enter Phonenumber..."/>
-    <br />
-    <input @bind="AcceptTos" type="checkbox" />
-    <label for="acceptTos">Accept Terms of Service</label>
-    <br />
-    <button @onclick="Create">Create</button>
-
 </body>
+
+<div class="container">
+    <h1 class="createTitle">CREATE ACCOUNT</h1>
+    <div class="FirstAndLastName">
+        <input class="firstname" @bind="Firstname" placeholder="Enter Firstname..." />
+        <input class="lastname" @bind="Lastname" placeholder="Enter Lastname..." />
+        <input class="phonenumber" @bind="Phonenumber" placeholder="Enter Phonenumber..." />
+    </div>
+
+    <div class="PassMail">
+        <input class="email" @bind="Email" placeholder="Enter Email..." />
+        <input class="password" @bind="Password" placeholder="Enter Password..." type="password" />
+    </div>
+    <div class="BirthdateLocation">
+        <input class="birthMonth" @bind="BirthDay" placeholder="Day" maxlength="2" size="2" />
+        <input class="birthMonth" @bind="BirthMonth" placeholder="Month" maxlength="2" size="2" />
+        <input class="birthYear" @bind="BirthYear" placeholder="Year" maxlength="4" size="4" />
+        <input class="location" @bind="Location" placeholder="Enter City..." />
+    </div>
+    <label class="Tos">
+        Accept Terms of Service
+        <input type="checkbox" />
+        <span class="checkmark"></span>
+    </label>
+    <button class="create-btn" @onclick="Create">Create</button>
+</div>
+
+
+
+@if (showEmptyNotification)
+{
+    <div class="alert"> *Not all input fields are filled out* </div>
+    <div class="success"></div>
+}
+
+@if (accountCreated)
+{
+    <div class="alert"></div>
+    <div class="success"> Account created! </div>
+}
+
+@if (accountCreated)
+{
+    Thread.Sleep(450);
+    NavigationManager.NavigateTo("/login");
+}
+
+@if (accountNotCreated)
+{
+    <div class="alert"> *An Error Occurred. Account not created!* </div>
+    <div class="success"></div>
+
+}
+
+@if (emailExists)
+{
+    <div class="alert"> *The chosen email is already used* </div>
+}
+
 
 @code {
     private string Firstname;
@@ -55,6 +97,7 @@
 
     private void Create()
     {
+        inputFields.Clear();
         inputFields.Add(Firstname);
         inputFields.Add(Lastname);
         inputFields.Add(Phonenumber);
@@ -85,6 +128,13 @@
         {
             connection.Open();
 
+            emailExists = CheckAccountExists();
+
+            if (emailExists)
+            {
+                return;
+            }
+
             string InsertSQL = $"INSERT INTO userprofiles (firstname, lastname, birthdate, reputation, email, password, phonenumber, termsofservice, location, joined, description) VALUES ('{Firstname}', '{Lastname}', '{BirthYear}-{BirthMonth}-{BirthDay}', '0', '{Email}',  crypt('{Password}', gen_salt('bf')), {Phonenumber}, {AcceptTos.ToString()}, '{Location}', '{JoinedDate}', '')";
 
             using (NpgsqlCommand command = new NpgsqlCommand(InsertSQL, connection))
@@ -107,7 +157,8 @@
         {
             return true;
 
-        } else
+        }
+        else
         {
             return false;
         }
@@ -135,42 +186,32 @@
         return false;
     }
 
+    private bool CheckAccountExists()
+    {
+        string confirmationSQL = $"SELECT * FROM userprofiles WHERE email = '{Email}'";
+        using (NpgsqlCommand command = new NpgsqlCommand(confirmationSQL, connection))
+        {
+            using (NpgsqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string email = reader["email"].ToString();
+
+                    if (email == Email)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private void notifyEmpty()
     {
         showEmptyNotification = true;
     }
 }
 
-@if (showEmptyNotification)
-{
-    <div class="alert">
-        <span class="closebtn"></span>
-        Not all input fields are filled out
-    </div>
-}
 
-@if (accountCreated) 
-{
-    <div class="alert">
-        <span class="closebtn"></span>
-        Account created!
-    </div>
-}
-@if (accountNotCreated)
-{
-    <div class="alert">
-        <span class="closebtn"></span>
-        An Error Occurred.
-        <br />
-        Account not created!
-    </div>
-}
-
-@if (emailExists)
-{
-    <div class="alert">
-        <span class="closebtn"></span>
-        The chosen email is already used.
-    </div>
-}
 
