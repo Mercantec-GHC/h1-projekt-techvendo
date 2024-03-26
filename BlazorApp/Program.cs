@@ -1,4 +1,7 @@
 using BlazorApp.Components;
+using BlazorApp.Components.Layout;
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace BlazorApp
 {
@@ -11,6 +14,10 @@ namespace BlazorApp
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            builder.Services.AddScoped<LoginService>();
+            builder.Services.AddSingleton<LoginState>();
+            builder.Services.AddScoped<NavMenu>();
 
             var app = builder.Build();
 

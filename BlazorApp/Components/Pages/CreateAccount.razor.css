@@ -1,10 +1,4 @@
-﻿body {
-    background-color: #3E3E3E;
-    background-image: url(/images/download.jpg);
-    background-repeat: no-repeat;
-}
-
-.container {
+﻿.container {
     display: flex;
     justify-content: center;
     align-items: center;

@@ -2,6 +2,8 @@
 @using Npgsql;
 @inject NavigationManager NavigationManager
 
+<PageTitle>TechVendo</PageTitle>
+
 <body>
 </body>
 
@@ -31,6 +33,15 @@
     <button class="create-btn" @onclick="Create">Create</button>
 </div>
 
+<style>
+    body {
+        background-image: url(/images/download.jpg);
+        background-repeat: no-repeat;
+        margin: 0;
+        padding: 0;
+        background-size: cover;
+    }
+</style>
 
 
 @if (showEmptyNotification)

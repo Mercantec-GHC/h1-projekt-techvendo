@@ -1,6 +1,10 @@
 ﻿@page "/login"
 @using Npgsql;
 @inject NavigationManager NavigationManager
+@inject LoginService LoginService
+@inject Layout.NavMenu navMenu
+
+<PageTitle>TechVendo</PageTitle>
 
 <body>
 </body>
@@ -18,10 +22,20 @@
     <a class="createNew" @onclick="navigateToCreateAccount">Create a new account</a>
 </div>
 
+<style>
+    body {
+    background-image: url(/images/download.jpg);
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+    background-size: cover;
+}
+</style>
+
 @if (loginFailed)
 {
     <div class="alert">
-        Wrong email or password...
+        Incorrect email or password...
     </div>
 }
 
@@ -32,16 +46,23 @@
         <br />
         Welcome, @dbFirstname @dbLastname
     </div>
+    if (!string.IsNullOrEmpty(returnUrl))
+    {
+        LoginService.RedirectLastPage(dbFirstname, dbLastname, loginSuccess, returnUrl, dbProfileId);
+    }
 }
 
 @code {
+    [Parameter]
+    public string returnUrl { get; set; } = string.Empty;
+
     private string Email;
     private string Password;
-
     private string dbEmail;
     private string dbPassword;
     private string dbFirstname;
     private string dbLastname;
+    private int dbProfileId;
 
     private bool loginSuccess = false;
     private bool loginFailed = false;
@@ -49,12 +70,15 @@
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
     private NpgsqlConnection connection;
 
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
         connection = new NpgsqlConnection(connectionString);
         connection.Open();
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var queryParameters = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        returnUrl = queryParameters["returnUrl"];
     }
 
     private void loginCheck()
@@ -76,6 +100,7 @@
                     dbPassword = reader["password"].ToString();
                     dbFirstname = reader["firstname"].ToString();
                     dbLastname = reader["lastname"].ToString();
+                    dbProfileId = (int)reader["id"];
                 }
             }
         }
@@ -89,11 +114,12 @@
         {
             loginSuccess = true;
         }
-}
+    }
     private void navigateToCreateAccount()
     {
         NavigationManager.NavigateTo("/createaccount");
     }
+
 }
 
 
