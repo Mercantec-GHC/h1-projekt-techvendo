@@ -1,4 +1,10 @@
-﻿<h3>ProfileSearch</h3>
+﻿@page "/profilesearch"
+@using Npgsql;
+
+
+<div class="header">
+<h3>ProfileSearch</h3>
+</div>
 
 <div id="cover">
   <form method="get" action="">
@@ -15,23 +21,55 @@
 </div>
 
 @code {
+    private List<UserProfiles> foundUsers = new List<UserProfiles>();
+
+private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+private NpgsqlConnection connection;
+
+ protected override void OnInitialized()
+ {
+     base.OnInitialized();
+     connection = new NpgsqlConnection(connectionString);
+     connection.Open();
+}
+
+  string SelectSQL = $"SELECT * FROM userprofiles WHERE firstname LIKE %{firstnameVariable}% ";
+
+  using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+  {
+      using (NpgsqlDataReader reader = command.ExecuteReader())
+      {
+          while (reader.Read())
+          {
+              UserClasses.UserProfiles user = new UserClasses.UserProfiles{
+
+              };
+          }
+      }
+  }
 
 }
 
 <style>
-    * {
+
+   * {
   outline: none;
 }
 
-html,
 body {
   height: 100%;
   min-height: 100%;
+  
 }
 
 body {
   margin: 0;
-  background-color: #ffd8d8;
+  background-color: darkgrey;
+  background-image: linear-gradient(to right top, #000000, #1e0b15, #2e1227, #3c183f, #41235d, #413375, #39448e, #2155a7, #106bbb, #0081ce, #0098df, #00aeef);
+  background-size:cover;
+  background-repeat: no-repeat;
+  height: 1400px;
+  overflow-y: hidden;
 }
 
 .tb {
@@ -56,16 +94,17 @@ button {
 
 #cover {
   position: absolute;
-  top: 50%;
+  top: 30%;
   left: 0;
   right: 0;
-  width: 550px;
+  width: 850px;
   padding: 35px;
   margin: -83px auto 0 auto;
-  background-color: #ff7575;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px #ff7c7c, 0 0 0 20px #ffffffeb;
+  background-color: #226990;
+  border-radius: 100px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
   transform: scale(0.6);
+
 }
 
 form {
@@ -77,10 +116,11 @@ input[type="text"] {
   height: 96px;
   font-size: 60px;
   line-height: 1;
+  font-family: Arial, sans-serif;
 }
 
 input[type="text"]::placeholder {
-  color: #e16868;
+  color: white;
 }
 
 #s-cover {
@@ -169,5 +209,7 @@ button span:after {
   width: 40px;
   background-color: #fff;
 }
+
+
 
 </style>
