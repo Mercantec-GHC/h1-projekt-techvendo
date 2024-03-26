@@ -1,4 +1,9 @@
-﻿<Nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" style="background-color: #2D2D2D; justify-content: flex-start;">
+﻿@using Microsoft.AspNetCore.Components
+@inject NavigationManager NavigationManager
+@inject LoginService LoginService
+@inject LoginState LoginInfo
+
+<Nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" style="background-color: #2D2D2D; justify-content: flex-start;">
   <div class="container">
     <a class="navbar-brand" href="/" style="color: #FFFFFF; margin-left: 40px;">TECHVENDO</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -11,20 +16,29 @@
         <a class="nav-link" href="/aboutus" style="color: #FFFFFF; font-style: italic; margin-left: 10px;">About Us</a>
       </div>
     </div>
-    <a class="nav-link ml-auto" href="/login">Login</a>
-  </div>
+        @if (LoginInfo.UserLoggedIn)
+        {
+            <a class="nav-link ml-auto" @onclick="directToProfilePage" >@LoginInfo.UserFirstname @LoginInfo.UserLastname</a>
+        } else
+        {
+            <a class="nav-link ml-auto" @onclick="directToLoginPage">Login</a>
+        }    
+    </div>
 </Nav>
-
 
 <style>
     .navbar.navbar-expand-lg.navbar-dark.bg-dark.sticky-top {
         background-color: #2D2D2D;
-        justify-content: flex-start; /* Adjust as needed */
+        justify-content: flex-start;
     }
 
     .container {
         display: grid;
         grid-template-columns: auto 1fr auto;
+    }
+
+    .nav-link ml auto:hover {
+        cursor: pointer;
     }
 
     .nav-link {
@@ -34,7 +48,6 @@
     }
 
         .nav-link.active {
-            /* Style for active nav link */
         }
 
         .nav-link:hover {
@@ -46,7 +59,7 @@
     .sticky-top {
         position: sticky;
         top: 0;
-        z-index: 1020; /* This ensures the navbar stays on top of other elements */
+        z-index: 1020;
     }
 
     .login-btn {
@@ -63,3 +76,18 @@
         }
 
 </style>
+
+@code {
+
+    private void directToLoginPage()
+    {
+        string returnUrl = NavigationManager.Uri;
+
+        LoginService.NavigateToLogin(returnUrl);
+    }
+
+    private void directToProfilePage()
+    {
+        NavigationManager.NavigateTo($"/profileviewer/{LoginInfo.ProfileId}");
+    }
+}

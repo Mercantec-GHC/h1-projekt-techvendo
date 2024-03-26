@@ -1,9 +1,4 @@
-﻿body {
-    background-color: #3E3E3E;
-    background-image: url(/images/download.jpg);
-    background-repeat: no-repeat;
-}
-
+﻿
 .container {
     display: flex;
     justify-content: center;
@@ -72,6 +67,10 @@
     color: white;
     font-size: 18px;
     font-weight: bold;
+}
+
+.createNew:hover {
+    cursor: pointer
 }
 
 .alert {
