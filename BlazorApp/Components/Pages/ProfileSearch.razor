@@ -34,9 +34,30 @@
         base.OnInitialized();
         connection = new NpgsqlConnection(connectionString);
         connection.Open();
+
+        string SelectSQL = $"SELECT * FROM userprofiles LIMIT 20;";
+
+        using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+        {
+            using (NpgsqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    UserClasses.UserProfiles user = new UserClasses.UserProfiles
+                        {
+                            FirstName = reader["firstname"].ToString(),
+                            LastName = reader["lastname"].ToString(),
+                            ProfileId = (int)reader["id"]
+                        };
+                    allUsers.Add(user);
+                }
+            }
+        }
+
     }
-    private void GetUsers()
+    private void SearchUsers()
     {
+       
         string SelectSQL = $"SELECT * FROM userprofiles WHERE firstname LIKE '%{inputSearch}%'";
 
         using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
@@ -51,7 +72,6 @@
                             LastName = reader["lastname"].ToString(),
                             ProfileId = (int)reader["id"]
                 };
-                    allUsers.Add(user);
                     searchedUsers.Add(user);
                 }
             }
