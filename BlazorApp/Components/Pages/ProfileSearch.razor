@@ -21,32 +21,63 @@
 </div>
 
 @code {
-    private List<UserProfiles> foundUsers = new List<UserProfiles>();
+    private string inputSearch = "";
+    private List<UserClasses.UserProfiles> allUsers = new List<UserClasses.UserProfiles>();
+    private List<UserClasses.UserProfiles> searchedUsers = new List<UserClasses.UserProfiles>();
 
-private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
-private NpgsqlConnection connection;
 
- protected override void OnInitialized()
- {
-     base.OnInitialized();
-     connection = new NpgsqlConnection(connectionString);
-     connection.Open();
-}
+    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+    private NpgsqlConnection connection;
 
-  string SelectSQL = $"SELECT * FROM userprofiles WHERE firstname LIKE %{firstnameVariable}% ";
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        connection = new NpgsqlConnection(connectionString);
+        connection.Open();
 
-  using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
-  {
-      using (NpgsqlDataReader reader = command.ExecuteReader())
-      {
-          while (reader.Read())
-          {
-              UserClasses.UserProfiles user = new UserClasses.UserProfiles{
+        string SelectSQL = $"SELECT * FROM userprofiles LIMIT 20;";
 
-              };
-          }
-      }
-  }
+        using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+        {
+            using (NpgsqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    UserClasses.UserProfiles user = new UserClasses.UserProfiles
+                        {
+                            FirstName = reader["firstname"].ToString(),
+                            LastName = reader["lastname"].ToString(),
+                            ProfileId = (int)reader["id"]
+                        };
+                    allUsers.Add(user);
+                }
+            }
+        }
+
+    }
+    private void SearchUsers()
+    {
+       
+        string SelectSQL = $"SELECT * FROM userprofiles WHERE firstname LIKE '%{inputSearch}%'";
+
+        using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+        {
+            using (NpgsqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    UserClasses.UserProfiles user = new UserClasses.UserProfiles
+                        {
+                            FirstName = reader["firstname"].ToString(),
+                            LastName = reader["lastname"].ToString(),
+                            ProfileId = (int)reader["id"]
+                };
+                    searchedUsers.Add(user);
+                }
+            }
+        }
+    }
+   
 
 }
 
