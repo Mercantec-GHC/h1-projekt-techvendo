@@ -19,10 +19,12 @@
     </div>
         @if (LoginInfo.UserLoggedIn)
         {
-            <a class="nav-link ml-auto" @onclick="directToProfilePage" >@LoginInfo.UserFirstname @LoginInfo.UserLastname</a>
+            <a class="nav-link" @onclick="directToProfilePage" style="font-weight: bold; ">@LoginInfo.UserFirstname @LoginInfo.UserLastname</a>
+            <a class="nav-link" @onclick="Logout">Logout</a>
+
         } else
         {
-            <a class="nav-link ml-auto" @onclick="directToLoginPage">Login</a>
+            <a class="nav-link" @onclick="directToLoginPage">Login</a>
         }    
     </div>
 </Nav>
@@ -38,10 +40,6 @@
         grid-template-columns: auto 1fr auto;
     }
 
-    .nav-link ml auto:hover {
-        cursor: pointer;
-    }
-
     .nav-link {
         color: #FFFFFF;
         font-style: italic;
@@ -55,6 +53,7 @@
             color: #FFFFFF;
             background-color: #424242;
             border-radius: 10px;
+            cursor: pointer;
         }
 
     .sticky-top {
@@ -80,11 +79,30 @@
 
 @code {
 
+    public void Logout()
+    {
+        LoginService.OnLoginStatusChanged -= UpdateLoginState;
+        LoginService.LogOut();
+        LoginInfo.SetLoggedOut();
+        StateHasChanged();
+    }
+
+    private void UpdateLoginState()
+    {
+        LoginInfo.UserLoggedIn = LoginService.UserLoggedIn;
+        StateHasChanged();
+    }
+
+
     private void directToLoginPage()
     {
-        string returnUrl = NavigationManager.Uri;
+        LoginService.OnLoginStatusChanged -= UpdateLoginState;
 
+        string returnUrl = NavigationManager.Uri;
         LoginService.NavigateToLogin(returnUrl);
+
+        LoginInfo.UserLoggedIn = LoginService.UserLoggedIn;
+        LoginService.OnLoginStatusChanged += UpdateLoginState;
     }
 
     private void directToProfilePage()
