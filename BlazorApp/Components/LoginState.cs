@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Primitives;
 using System.ComponentModel;
+using BlazorApp.Components;
 
 namespace BlazorApp.Components
 {
@@ -23,6 +24,19 @@ namespace BlazorApp.Components
             UserFirstname = firstName;
             UserLastname = lastName;
             ProfileId = profileId;
+
+            OnPropertyChanged(nameof(UserLoggedIn));
+            OnPropertyChanged(nameof(UserFirstname));
+            OnPropertyChanged(nameof(UserLastname));
+            OnPropertyChanged(nameof(ProfileId));
+        }
+
+        public void SetLoggedOut()
+        {
+            UserLoggedIn = false;
+            UserFirstname = string.Empty;
+            UserLastname = string.Empty;
+            ProfileId = 0;
 
             OnPropertyChanged(nameof(UserLoggedIn));
             OnPropertyChanged(nameof(UserFirstname));
