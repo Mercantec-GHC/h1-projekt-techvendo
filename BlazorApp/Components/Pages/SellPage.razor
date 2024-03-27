@@ -1,5 +1,7 @@
 ﻿@page "/products/sellpage"
 @using Npgsql
+@inject LoginState LoginInfo
+@inject LoginService LoginService
 
 <body style="background-color: #3E3E3E;">
     <div class="d-flex justify-content-center flex-column align-items-center" style="height: 100vh;">
@@ -258,15 +260,13 @@
     }
 
     void CloseModal()
-{
-    successMessage = string.Empty;
-}
+    {
+        successMessage = string.Empty;
+    }
 
 
     private void SellProduct()
     {
-
-
         string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;"; // Replace with actual connection string
 
         product_type = selectedProductType.ToString();
@@ -278,15 +278,15 @@
             string sql = string.Empty;
             if (product_type == "CPU")
             {
-                sql = $"INSERT INTO products (brand, series, model, product_type, price, cores, threads, idle_clock_speed, max_clock_speed, cache, description) VALUES ('{brand}', '{series}', '{model}', '{product_type}', {price}, {cores}, {threads}, '{idle_clock_speed}', '{max_clock_speed}', '{cache}', '{description}')";
+                sql = $"INSERT INTO products (seller_id, brand, series, model, product_type, price, cores, threads, idle_clock_speed, max_clock_speed, cache, description) VALUES ({LoginInfo.ProfileId}, '{brand}', '{series}', '{model}', '{product_type}', {price}, {cores}, {threads}, '{idle_clock_speed}', '{max_clock_speed}', '{cache}', '{description}')";
             }
             else if (product_type == "GPU")
             {
-                sql = $"INSERT INTO products (brand, series, model, product_type, price, vram, ports, description) VALUES ('{brand}', '{series}', '{model}', '{product_type}', {price}, '{vram}', '{ports}', '{description}')";
+                sql = $"INSERT INTO products (seller_id, brand, series, model, product_type, price, vram, ports, description) VALUES ({LoginInfo.ProfileId}, '{brand}', '{series}', '{model}', '{product_type}', {price}, '{vram}', '{ports}', '{description}')";
             }
             else if (product_type == "RAM")
             {
-                sql = $"INSERT INTO products (brand, series, model, product_type, price, ramtype, capacity, ramspeed, description) VALUES ('{brand}', '{series}', '{model}', '{product_type}', {price}, '{ramtype}', {capacity}, {ramspeed}, '{description}')";
+                sql = $"INSERT INTO products (seller_id, brand, series, model, product_type, price, ramtype, capacity, ramspeed, description) VALUES ({LoginInfo.ProfileId}, '{brand}', '{series}', '{model}', '{product_type}', {price}, '{ramtype}', {capacity}, {ramspeed}, '{description}')";
             }
             else
             {
@@ -296,6 +296,7 @@
 
             using (var command = new NpgsqlCommand(sql, connection))
             {
+                command.Parameters.AddWithValue("@ProfileId", LoginInfo.ProfileId);
                 command.Parameters.AddWithValue("@Brand", brand);
                 command.Parameters.AddWithValue("@Series", series);
                 command.Parameters.AddWithValue("@Model", model);
