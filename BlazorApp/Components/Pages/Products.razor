@@ -3,9 +3,19 @@
 @using ProductClassLibrary
 @using ProductClassLibrary.Products
 @inject NavigationManager NavigationManager
+@inject LoginState LoginInfo
+@inject LoginService LoginService
 
 <PageTitle>Products</PageTitle>
 
+@if (showNotSignedInMessage)
+{
+<div class="alert alert-warning alert-dismissible fade show" style="background-color: #226990" role="alert">
+    <strong style="color: #ffff">Warning!</strong> <p  style="color: #ffff">You are not signed in. You will be redirected to the login page shortly.</p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+}
 
 @* Header/title name/page name*@
 <div class="header d-flex justify-content-center align-items-center pt-3 text-center">
@@ -21,6 +31,7 @@
     <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
     </div>
 </div>
+
 
 
 @*Cards/prodcut layout*@
@@ -163,13 +174,38 @@
     private string selectedTypeOption = "Product_Type";
     private string selectedBrandOption = "Brand";
     private bool sortAscending = true;
+    private bool showNotSignedInMessage = false;
+    private System.Timers.Timer redirectTimer;
+
+
 
 
     @*private void to redirect to sellpage*@
     private void NavigateToSellPage()
     {
-        NavigationManager.NavigateTo("/products/sellpage");
+        if (LoginInfo.UserLoggedIn == true)
+        {
+            NavigationManager.NavigateTo("/products/sellpage");
+
+        }
+        else
+        {
+        showNotSignedInMessage = true;
+        redirectTimer = new System.Timers.Timer(3000); // 5 seconds
+        redirectTimer.Elapsed += (sender, e) => NavigateToLoginPage();
+        redirectTimer.Start();
+        }
     }
+
+void NavigateToLoginPage()
+{
+    string returnUrl = NavigationManager.Uri;
+    LoginService.NavigateToLogin(returnUrl);
+    showNotSignedInMessage = false;
+    redirectTimer.Stop();
+}
+
+
 
     @*function for the view boxes to get information*@
     void OpenModal(ProductClass product)

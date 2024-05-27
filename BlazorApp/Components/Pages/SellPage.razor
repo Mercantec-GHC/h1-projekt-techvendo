@@ -50,6 +50,15 @@
                     </div>
                     <div class="modal-body">
                         <div>
+                            <label class="white-label">Brand: </label>
+                            <select class="dropdown-brand input-after-label" @bind="brand">
+                                <option value="">-- Select --</option>
+                                <option value="Intel">Intel</option>
+                                <option value="AMD">AMD</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+             <div>
                 <label class="white-label">Series: </label>
                 <input class="input-after-label" type="text" @bind="series" />
             </div>
@@ -262,10 +271,12 @@
     string ramtype;
     int capacity;
     int ramspeed;
+    int seller_id;
     public string ErrorMessage { get; set; }
 
 
 
+  
     enum ProductType
     {
         None,
@@ -303,10 +314,7 @@
         // Clear your form fields here...
         selectedProductType = ProductType.None;
     }
-
-
-
-
+ 
     private void SellProduct()
     {
         string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;"; // Replace with actual connection string
@@ -320,15 +328,15 @@
             string sql = string.Empty;
             if (product_type == "CPU")
             {
-                sql = $"INSERT INTO products (brand, series, model, product_type, price, cores, threads, idle_clock_speed, max_clock_speed, cache, description) VALUES ('{brand}', '{series}', '{model.ToUpper()}', '{product_type}', {price}, {cores}, {threads}, '{idle_clock_speed}', '{max_clock_speed}', '{cache}', '{description}')";
+                sql = $"INSERT INTO products (brand, series, model, product_type, price, cores, threads, idle_clock_speed, max_clock_speed, cache, description, seller_id) VALUES ('{brand}', '{series}', '{model.ToUpper()}', '{product_type}', {price}, {cores}, {threads}, '{idle_clock_speed}', '{max_clock_speed}', '{cache}', '{description}', {LoginInfo.ProfileId})";
             }
             else if (product_type == "GPU")
             {
-                sql = $"INSERT INTO products (brand, series, model, product_type, price, vram, ports, description) VALUES ('{brand}', '{series}', '{model.ToUpper()}', '{product_type}', {price}, '{vram}', '{ports}', '{description}')";
+                sql = $"INSERT INTO products (brand, series, model, product_type, price, vram, ports, description, seller_id) VALUES ('{brand}', '{series}', '{model.ToUpper()}', '{product_type}', {price}, '{vram}', '{ports}', '{description}', {LoginInfo.ProfileId})";
             }
             else if (product_type == "RAM")
             {
-                sql = $"INSERT INTO products (brand, series, model, product_type, price, ramtype, capacity, ramspeed, description) VALUES ('{brand}', '{series}', '{model.ToUpper()}', '{product_type}', {price}, '{ramtype}', {capacity}, {ramspeed}, '{description}')";
+                sql = $"INSERT INTO products (brand, series, model, product_type, price, ramtype, capacity, ramspeed, description, seller_id) VALUES ('{brand}', '{series}', '{model.ToUpper()}', '{product_type}', {price}, '{ramtype}', {capacity}, {ramspeed}, '{description}', {LoginInfo.ProfileId})";
 
             }
             else
@@ -394,6 +402,7 @@
         }
     }
 }
+
 
 
 
