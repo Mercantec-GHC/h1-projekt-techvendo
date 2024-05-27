@@ -22,6 +22,11 @@
     <h1 class="prod-title">PRODUCTS</h1>
     </div>
 
+<div class="productSearch">
+    <input @bind="searchedItem" class="searchbar" placeholder="Search...">  
+    <button @onclick="SearchItems" class="search-btn">Search</button>
+</div>
+
 
 
 @*making the sort btn*@
@@ -179,6 +184,7 @@
 
 
 
+    private string searchedItem = "";
 
     @*private void to redirect to sellpage*@
     private void NavigateToSellPage()
@@ -296,10 +302,62 @@ void ApplySort()
         SortProducts();
     }
 
+    private void SearchItems()
+    {
+        productsToShow.Clear();
+        products.Clear();
+
+        if (searchedItem != "")
+        {
+            string SelectSQL = $"SELECT * FROM products WHERE LOWER( series ) LIKE '%{searchedItem.ToLower()}%'";
+            try
+            {
+                connection.Open();
+                using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+                {
+                    using (NpgsqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var product = new ProductClass
+                                {
+                                    Price = (int)reader["price"],
+                                    EANNumber = reader["ean_number"].ToString(),
+                                    Brand = reader["brand"].ToString(),
+                                    Model = reader["model"].ToString(),
+                                    Series = reader["series"].ToString(),
+                                    Description = reader["description"].ToString(),
+                                    Product_Type = reader["product_type"].ToString()
+                                };
+                            products.Add(product);
+                            productsToShow.Add(product);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+            finally
+            {
+                if (connection.State == System.Data.ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+        }
+        else
+        {
+            GetProducts();
+        }
+
+    }
+
+
     public List<ProductClass> GetProducts()
     {
-        var products = new List<ProductClass>();
-
+        productsToShow.Clear();
         try
         {
             connection.Open();
@@ -320,8 +378,6 @@ void ApplySort()
                                 Series = reader["series"].ToString(),
                                 Description = reader["description"].ToString(),
                                 Product_Type = reader["product_type"].ToString()
-
-
                             };
                         products.Add(product);
                         productsToShow.Add(product);
@@ -533,5 +589,40 @@ void ApplySort()
     color: white;
 }
 
+.productSearch {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    margin: auto;
+    width: 50%;
+    gap: 10px;
+}
+.searchbar 
+{ 
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+    background-color: #454545;
+    border-color: #454545;
+    color: #d3d3d3;
+    font-weight: bold;
+}
+
+.search-btn {
+    padding: 6px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background-color: #454545;
+    border-color: #454545;
+    color: white;
+    font-size: 18px;
+    margin-top: 10px;
+    width: 12%;
+    height: 12%;
+    background-color: #226990;
+    border-color: #226990;
+}
 
 </style>
