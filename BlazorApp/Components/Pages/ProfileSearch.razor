@@ -2,23 +2,45 @@
 @using Npgsql;
 
 
-<div class="header">
+<div class="header" style="text-align: center; color:white; margin-top: 2rem;">
 <h3>ProfileSearch</h3>
 </div>
 
 <div id="cover">
-  <form method="get" action="">
     <div class="tb">
-      <div class="td"><input type="text" placeholder="Search" required></div>
+      <div class="td"><input type="text" @bind="inputSearch" placeholder="Search" required></div>
       <div class="td" id="s-cover">
-        <button type="submit">
+        <button @onclick="SearchUsers">
           <div id="s-circle"></div>
           <span></span>
         </button>
-      </div>
+      </div>   
     </div>
-  </form>
+  </div>
+
+
+
+@foreach (UserClasses.UserProfiles user in allUsers)
+{ 
+<div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">@user.FirstName @user.LastName</h5>
+        <a href="/profileviewer/@user.ProfileId" class="btn btn-primary">Profile View</a>
+    </div>
 </div>
+}
+@foreach (UserClasses.UserProfiles searchedUser in searchedUsers)
+{
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">@searchedUser.FirstName @searchedUser.LastName</h5>
+            <a href="/profileviewer/@searchedUser.ProfileId" class="btn btn-primary">Profile View</a>
+        </div>
+    </div>
+    
+
+}
+
 
 @code {
     private string inputSearch = "";
@@ -35,30 +57,35 @@
         connection = new NpgsqlConnection(connectionString);
         connection.Open();
 
-        string SelectSQL = $"SELECT * FROM userprofiles LIMIT 20;";
-
-        using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+        if (!searchedUsers.Any())
         {
-            using (NpgsqlDataReader reader = command.ExecuteReader())
+            string SelectSQL = $"SELECT * FROM userprofiles LIMIT 5;";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
             {
-                while (reader.Read())
+                using (NpgsqlDataReader reader = command.ExecuteReader())
                 {
-                    UserClasses.UserProfiles user = new UserClasses.UserProfiles
-                        {
-                            FirstName = reader["firstname"].ToString(),
-                            LastName = reader["lastname"].ToString(),
-                            ProfileId = (int)reader["id"]
-                        };
-                    allUsers.Add(user);
+                    while (reader.Read())
+                    {
+                        UserClasses.UserProfiles user = new UserClasses.UserProfiles
+                            {
+                                FirstName = reader["firstname"].ToString(),
+                                LastName = reader["lastname"].ToString(),
+                                ProfileId = (int)reader["id"]
+                            };
+                        allUsers.Add(user);
+                    }
                 }
             }
         }
 
+
     }
     private void SearchUsers()
     {
-       
-        string SelectSQL = $"SELECT * FROM userprofiles WHERE firstname LIKE '%{inputSearch}%'";
+        allUsers.Clear();
+        searchedUsers.Clear();
+        string SelectSQL = $"SELECT * FROM userprofiles WHERE LOWER( firstname ) LIKE '%{inputSearch.ToLower()}%'";
 
         using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
         {
@@ -100,7 +127,7 @@ body {
   background-size:cover;
   background-repeat: no-repeat;
   height: 1400px;
-  overflow-y: hidden;
+  
 }
 
 .tb {
@@ -241,6 +268,10 @@ button span:after {
   background-color: #fff;
 }
 
-
+.card {
+    margin: auto;
+    top: 20%;
+    margin-bottom: 2rem;
+}
 
 </style>
