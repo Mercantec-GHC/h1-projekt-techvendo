@@ -26,21 +26,22 @@
         {
             <a class="nav-link" @onclick="directToLoginPage">Login</a>
         }    
-        @if (loggedOut)
-        {
-            <div class="modal" tabindex="-1" role="dialog" style="display:block; position: fixed;">
-                <div class="modal-dialog text-center" role="document">
-                    <div class="modal-content" style="background-color: #2D2D2D;">
-                        <div class="modal-body text-center">
-                            <h3 style="color: white;">You are now logged out</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            Timer(3000);
-        }
+      
     </div>
 </Nav>
+
+@if (loggedOut)
+{
+    <div class="alert alert-warning alert-dismissible fade show" style="background-color: #226990" role="alert">
+        <strong style="color: #ffff">Attention!</strong> <p style="color: #ffff">You are now logged out</p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    LoginService.NavigateToLogin("/");
+    LoginInfo.UserLoggedIn = LoginService.UserLoggedIn;
+    LoginService.OnLoginStatusChanged += UpdateLoginState;
+
+    Timer(3000);
+}
 
 <style>
     .navbar.navbar-expand-lg.navbar-dark.bg-dark.sticky-top {
