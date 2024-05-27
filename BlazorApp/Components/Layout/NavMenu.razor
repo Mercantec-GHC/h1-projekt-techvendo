@@ -26,6 +26,24 @@
         {
             <a class="nav-link" @onclick="directToLoginPage">Login</a>
         }    
+        @if (loggedOut)
+        {
+            <div class="modal" tabindex="-1" role="dialog" style="display:block; position: fixed;">
+                <div class="modal-dialog text-center" role="document">
+                    <div class="modal-content" style="background-color: #2D2D2D;">
+                        <div class="modal-body text-center">
+                            <h3 style="color: white;">You are now logged out</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            LoginService.NavigateToLogin("/");
+            Timer(3000);
+            LoginInfo.UserLoggedIn = LoginService.UserLoggedIn;
+            LoginService.OnLoginStatusChanged += UpdateLoginState;
+            loggedOut = false;
+
+        }
     </div>
 </Nav>
 
@@ -78,6 +96,7 @@
 </style>
 
 @code {
+    bool loggedOut = false;
 
     public void Logout()
     {
@@ -85,6 +104,7 @@
         LoginService.LogOut();
         LoginInfo.SetLoggedOut();
         StateHasChanged();
+        loggedOut = true;
     }
 
     private void UpdateLoginState()
@@ -103,10 +123,18 @@
 
         LoginInfo.UserLoggedIn = LoginService.UserLoggedIn;
         LoginService.OnLoginStatusChanged += UpdateLoginState;
+        loggedOut = false;
     }
 
     private void directToProfilePage()
     {
         NavigationManager.NavigateTo($"/profileviewer/{LoginInfo.ProfileId}");
+    }
+
+    async Task Timer(int delayInMs)
+    {
+        await Task.Delay(delayInMs);
+        loggedOut = false;
+        StateHasChanged();
     }
 }
