@@ -42,45 +42,6 @@
     width: 60%;
 }
 
-#profilePictureContainer {
-    position: absolute;
-    top: 14%;
-    right: 12%;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background-color: #CCCCCC;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#profilePicture {
-    width: 100%; 
-    height: 100%; 
-    border-radius: 50%;
-    display: block;
-    margin: auto;
-}
-
-#infoTitle {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin-left: 85px;
-    color: white;
-    position: absolute;
-    font-weight: bold;
-    top: 47%;
-    margin-left: 79%;
-}
-
-#infoText {
-    color: #CACACA;
-    position: absolute;
-    top: 50%;
-    margin-left: 73%;
-}
-
 #sellingTitle {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin-left: 85px;
@@ -89,7 +50,9 @@
 
 #selling {
     margin-left: 85px;
+    width: 30%;
 }
+
 #seeMoreButton {
     border-radius: 50px;
     background-color: #919191;
@@ -101,26 +64,57 @@
     display: inline-block;
 }
 
-#seeMoreButton p {
-    color: white;
-    font-weight: bold;
-    margin: 0;
-}
+    #seeMoreButton p {
+        color: white;
+        font-weight: bold;
+        margin: 0;
+    }
 
     #seeMoreButton:hover {
         background-color: #CFCFCF;
     }
 
+#profilePictureContainer {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background-color: #CCCCCC;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px; /* Add some space below the picture */
+}
+
+#profilePicture {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: block;
+    margin: auto;
+}
+
+#infoTitle {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 10px; /* Add some space below the title */
+}
+
+#infoText {
+    color: #CACACA;
+    padding: 20px 20px;
+    font-size: 18px; /* Make the text a bit larger */
+}
+
 #chatButton {
-    position: fixed;
     border-radius: 50px;
     background-color: #1C8CB6;
     color: #A0A0A0;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    right: 21%;
-    top: 55%
+    margin-bottom: 10px; /* Add some space below the button */
 }
 
     #chatButton p {
@@ -128,56 +122,53 @@
         font-weight: bold;
         margin: 0;
     }
+
     #chatButton:hover {
         background-color: #93C4D6;
     }
 
 #reportButton {
-    position: fixed;
     border-radius: 50px;
     background-color: #B32F2F;
     color: #A0A0A0;
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    right: 13%;
-    top: 55%;
+    margin-bottom: 10px; /* Add some space below the button */
 }
-
-    #reportButton p {
-        color: white;
-        font-weight: bold;
-        margin: 0;
-    }
 
 .grid-container {
     display: grid;
-    grid-template-columns: 3fr 1fr; 
+    grid-template-columns: 3fr 1fr;
+    gap: 30px; /* Increase the gap size */
 }
 
-    #reportButton:hover {
-        background-color: #CB6F6F;
-    }
+#reportButton p {
+    color: white;
+    font-weight: bold;
+    margin: 0;
+}
+
+#reportButton:hover {
+    background-color: #CB6F6F;
+}
+
 #repTitle {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: white;
     font-size: 30px;
-    position: fixed;
-    top: 62%;
-    right: 18%;
+    margin-bottom: 10px; /* Add some space below the title */
 }
 
 .star-rating {
-    position: fixed;
     display: flex;
-    top: 65%;
-    right: 17.5%;
-
+    margin-bottom: 10px; /* Add some space below the stars */
 }
 
 .star {
     font-size: 45px;
 }
+
 
 @media only screen and (min-width: 1920px) {
 
