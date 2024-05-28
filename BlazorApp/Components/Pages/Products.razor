@@ -22,10 +22,7 @@
     <h1 class="prod-title">PRODUCTS</h1>
     </div>
 
-<div class="productSearch">
-    <input @bind="searchedItem" class="searchbar" placeholder="Search...">  
-    <button @onclick="SearchItems" class="search-btn">Search</button>
-</div>
+
 
 
 
@@ -35,6 +32,10 @@
     <div class="sellpage-btn-container">
     <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
     </div>
+    <div class="productSearch">
+    <input @bind="searchedItem" class="searchbar" placeholder="Search...">  
+    <button @onclick="SearchItems" class="search-btn">Search</button>
+</div>
 </div>
 
 
@@ -597,32 +598,69 @@ void ApplySort()
     width: 50%;
     gap: 10px;
 }
-.searchbar 
-{ 
-    flex: 1;
-    padding: 8px;
+.searchbar {
+    flex: 0 0 auto; /* Ensures the search bar does not stretch */
+    padding: 10px 20px; /* Match the button's padding for same height */
     border: 1px solid #ccc;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 50px; /* Match the button's border radius */
+    font-size: 16px; /* Match the button's font size */
     background-color: #454545;
     border-color: #454545;
     color: #d3d3d3;
     font-weight: bold;
+    width: 400%; /* Four times the width of the button on small screens */
 }
 
-.search-btn {
-    padding: 6px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    background-color: #454545;
-    border-color: #454545;
-    color: white;
-    font-size: 18px;
-    margin-top: 10px;
-    width: 12%;
-    height: 12%;
-    background-color: #226990;
-    border-color: #226990;
+/* Medium screens (tablets, 768px and up) */
+@@media only screen and (min-width: 768px) {
+    .searchbar {
+        width: auto; /* Auto width on medium screens */
+    }
 }
+
+/* Large screens (desktops, 992px and up) */
+@@media only screen and (min-width: 992px) {
+    .searchbar {
+        width: auto; /* Auto width on large screens */
+    }
+}
+
+
+
+
+
+.search-btn {
+    background-color: #226990;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 50px;
+    font-family: Arial, sans-serif;
+    width: 100%; /* Full width on small screens */
+}
+
+/* Medium screens (tablets, 768px and up) */
+@@media only screen and (min-width: 768px) {
+    .search-btn {
+        width: auto; /* Auto width on medium screens */
+    }
+}
+
+/* Large screens (desktops, 992px and up) */
+@@media only screen and (min-width: 992px) {
+    .search-btn {
+        width: auto; /* Auto width on large screens */
+    }
+}
+
+
+
 
 </style>
