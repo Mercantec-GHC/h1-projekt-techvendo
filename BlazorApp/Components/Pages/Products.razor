@@ -76,16 +76,31 @@
 {
     <div class="modal" tabindex="-1" style="display:block;">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content" style="background-color: #282829;">
                 <div class="modal-header">
-                    <h5 class="modal-title">@selectedProduct.Brand</h5>
+                    <h5 class="viewModalTitle">@selectedProduct.Brand @selectedProduct.Series @selectedProduct.Model</h5>
                     <button type="button" class="btn-close" @onclick="CloseModal"></button>
                 </div>
                 <div class="modal-body">
+                    @switch (selectedProduct.Product_Type)
+                    {
+                        case "GPU":
+                        <p class="viewModalText"><strong>Ports:</strong> @selectedProduct.Ports</p>
+                        <p class="viewModalText"><strong>VRAM: </strong> @selectedProduct.VRAM</p>
+                        break;
 
-                    <p><strong>Ports:</strong> @selectedProduct.Ports</p>
-                    <p><strong>VRAM: </strong> @selectedProduct.VRAM</p>
-                    <p><strong>Description: </strong>@selectedProduct.Description</p>
+                        case "CPU":
+                        <p class="viewModalText"><strong>Cores:</strong> @selectedProduct.Cores</p>
+                        <p class="viewModalText"><strong>Threads: </strong> @selectedProduct.Threads</p>
+                        break;
+
+                        case "RAM":
+                        <p class="viewModalText"><strong>Capacity:</strong> @selectedProduct.Capacity</p>
+                        <p class="viewModalText"><strong>Speed: </strong> @selectedProduct.RamSpeed</p>
+                        break;
+                    }
+
+                     <p class="viewModalSeller"> <strong>Seller: </strong> <a @onclick="() => NavigateToSeller(selectedProduct.SellerID)"> @SellerName(selectedProduct.SellerID) </a> </p> <p class="viewModalText"><strong>Description: </strong>@selectedProduct.Description</p>
 
                 </div>
                 <div class="modal-footer">
@@ -167,7 +182,7 @@
 
 
 @code {
-    @*List to make layout, sorting, and view box*@
+        @*List to make layout, sorting, and view box*@
     private List<ProductClass> products = new List<ProductClass>();
     private List<ProductClass> productsToShow = new List<ProductClass>();
     private List<ProductClass> filteredProducts = new List<ProductClass>();
@@ -182,7 +197,6 @@
     private bool sortAscending = true;
     private bool showNotSignedInMessage = false;
     private System.Timers.Timer redirectTimer;
-
 
 
     private string searchedItem = "";
@@ -394,8 +408,26 @@ void ApplySort()
                                 Model = reader["model"].ToString(),
                                 Series = reader["series"].ToString(),
                                 Description = reader["description"].ToString(),
-                                Product_Type = reader["product_type"].ToString()
+                                Product_Type = reader["product_type"].ToString(),
+                                Ports = reader["ports"].ToString(),
+                                SellerID = (int)reader["seller_id"]
                             };
+                        switch (product.Product_Type)
+                        {
+                            case "GPU":
+                                product.VRAM = (int)reader["vram"];
+                                break;
+
+                            case "CPU":
+                                product.Cores = (int)reader["cores"];
+                                product.Threads = (int)reader["threads"];
+                                break;
+                            case "RAM":
+                                product.Capacity = (int)reader["capacity"];
+                                product.RamSpeed = (int)reader["ramspeed"];
+                                break;
+                        }
+
                         products.Add(product);
                         productsToShow.Add(product);
                     }
@@ -416,6 +448,47 @@ void ApplySort()
 
         return products;
     }
+
+    public string SellerName(int sellerId)
+    {
+        string firstName = "";
+        string lastName = "";
+        string fullName = "";
+
+        try
+        {
+            connection.Open();
+            string SelectSQL = $"SELECT * FROM userprofiles WHERE id = {sellerId}";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+            {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        firstName = (string)reader["firstname"];
+                        lastName = (string)reader["lastname"];
+                    }
+                }
+            }
+        }
+        finally
+        {
+            if (connection.State == System.Data.ConnectionState.Open)
+            {
+                connection.Close();
+            }
+        }
+        fullName = $"{firstName} {lastName}";
+
+        return fullName;
+    }
+
+    private void NavigateToSeller(int sellerId)
+    {
+        NavigationManager.NavigateTo($"/profileviewer/{sellerId}");
+    }
+
 
 
     void SortProducts()
@@ -674,6 +747,23 @@ void ApplySort()
     .search-btn {
         width: auto; /* Auto width on large screens */
     }
+}
+
+.viewModalText {
+    color: white;
+}
+
+.viewModalTitle {
+    color: white;
+    font-weight: bold;
+}
+
+.viewModalSeller {
+    color:white;
+    text-decoration: underline;
+}
+.viewModalSeller:hover {
+    cursor: pointer;
 }
 
 
