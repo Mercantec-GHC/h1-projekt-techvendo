@@ -1,5 +1,7 @@
 ﻿@page "/profileviewer/{UserId}"
 @using Npgsql;
+@inject LoginState LoginInfo
+@inject NavigationManager NavManager
 
 <div class="grid-container">
     <div class="column1">
@@ -10,32 +12,61 @@
         <div id="descriptionBox">
             <p>@CurrentUser.Description</p>
         </div>
+        @if (LoginInfo.UserLoggedIn)
+        {
+            if (LoginInfo.ProfileId.ToString() == UserId)
+            {
+                <button @onclick="EditDescription" class="editDescription">Edit</button>
+            }
+        }
 
-        <hr id="descriptionUnderline" />
+        @if (editDescPressed)
+        {
+            sellingCardsLimit = 0;
+            <div class="modal" tabindex="-1" style="display:block;" id="descModal">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="background-color: #282829;">
+                        <div class="modal-header">
+                            <h5 class="modal-title" style="color: white;">Edit Description:</h5>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <input class="input-after-label" type="text" @bind="writtenDescription" style="width: 100%; height: 100%;" />
+                            </div>
+                            <button type="button" class="save-btn" @onclick="SaveAndCloseModal"> Save </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
 
-        <div id="profilePictureContainer">
-            <img src="/testprofilepicture.png" id="profilePicture" />
-        </div>
 
-        <h1 id="infoTitle">INFO</h1>
-        <p id="infoText">Joined: @CurrentUser.Joined Location: @CurrentUser.Location</p>
 
-        <h1 id="sellingTitle">SELLING</h1>
-        <div id="selling">
-            <br />
+    <hr id="descriptionUnderline" />
+
+    <div id="profilePictureContainer">
+        <img src="/testprofilepicture.png" id="profilePicture" />
+    </div>
+
+    <h1 id="infoTitle">INFO</h1>
+    <p id="infoText">Joined: @CurrentUser.Joined Location: @CurrentUser.Location</p>
+
+    <h1 id="sellingTitle">SELLING</h1>
+    <div id="selling">
+        <br />
 
             @foreach (var product in productList)
             {
                 if (sellingCardsLimit <= 2) //Makes sure it cant show more than 4 items
                 {
                     sellingCardsLimit++;
-                    <SellingCards SellingProduct="product"></SellingCards>
-                    <p></p>
+                <SellingCards SellingProduct="product"></SellingCards>
+                <p></p>
                     if (sellingCardsLimit == 3)
                     {
-                        <button id="seeMoreButton">
-                            <p>See More</p>
-                        </button>
+                    <button id="seeMoreButton">
+                        <p>See More</p>
+                    </button>
                     }
                 }
                 else
@@ -43,33 +74,35 @@
                     break;
                 }
             }
-            <br />
-           
+        <br />
+
+    </div>
+</div>
+
+
+<div class="column2">
+
+    <button id="chatButton">
+        <p>CHAT</p>
+    </button>
+
+    <button id="reportButton">
+        <p>REPORT</p>
+    </button>
+
+    <h1 id="repTitle">REPUTATION</h1>
+
+    <div>
+        <div class="star-rating">
+                @for (int i = 1; i <= 5; i++)
+                {
+                <span style="@(i <= CurrentUser.Reputation ? "color: gold;" : "color: #ccc;")" class="star">&#9733;</span>
+                }
         </div>
     </div>
+</div>
 
 
-    <div class="column2">
-
-        <button id="chatButton">
-            <p>CHAT</p>
-        </button>
-
-        <button id="reportButton">
-            <p>REPORT</p>
-        </button>
-
-        <h1 id="repTitle">REPUTATION</h1>
-
-        <div>
-                <div class="star-rating">
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                        <span style="@(i <= CurrentUser.Reputation ? "color: gold;" : "color: #ccc;")" class="star">&#9733;</span>
-                    }
-                </div>
-        </div>
-    </div>
 </div>
 
 <body id="pageBody">
@@ -80,6 +113,8 @@
     [Parameter]
     public string UserId { get; set; }
     private string primaryKeyColumn;
+    private bool editDescPressed = false;
+    private string writtenDescription = "";
 
     private int sellingCardsLimit = 0;
 
@@ -143,9 +178,42 @@
             DateTime datetimeValue = DateTime.Parse(CurrentUser.Joined);
             CurrentUser.Joined = datetimeValue.ToString("dd-MM-yyyy");
         }
-        catch (Exception)
+        finally
         {
-          
+            if (connection.State == System.Data.ConnectionState.Open)
+            {
+                connection.Close();
+            }
         }
+
+    }
+
+    private void EditDescription()
+    {
+        editDescPressed = true;
+        writtenDescription = CurrentUser.Description;
+    }
+
+    private void SaveAndCloseModal()
+    {
+        string insertSQL = $"UPDATE userprofiles SET description = '{writtenDescription}' WHERE id = {UserId}";
+        connection.Open();
+
+        try
+        {
+            using (NpgsqlCommand command = new NpgsqlCommand(insertSQL, connection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+        finally
+        {
+            if (connection.State == System.Data.ConnectionState.Open)
+            {
+                connection.Close();
+            }
+        }
+        editDescPressed = false;
+        NavManager.NavigateTo(NavManager.Uri, true);
     }
 }
