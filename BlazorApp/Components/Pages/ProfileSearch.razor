@@ -3,43 +3,53 @@
 
 
 <div class="header" style="text-align: center; color:white; margin-top: 2rem;">
-<h3>ProfileSearch</h3>
+    <h3>ProfileSearch</h3>
 </div>
 
 <div id="cover">
     <div class="tb">
-      <div class="td"><input type="text" @bind="inputSearch" placeholder="Search" required></div>
-      <div class="td" id="s-cover">
-        <button @onclick="SearchUsers">
-          <div id="s-circle"></div>
-          <span></span>
-        </button>
-      </div>   
-    </div>
-  </div>
-
-
-
-@foreach (UserClasses.UserProfiles user in allUsers)
-{ 
-<div class="card" style="width: 18rem;">
-    <div class="card-body">
-        <h5 class="card-title">@user.FirstName @user.LastName</h5>
-        <a href="/profileviewer/@user.ProfileId" class="btn btn-primary">Profile View</a>
-    </div>
-</div>
-}
-@foreach (UserClasses.UserProfiles searchedUser in searchedUsers)
-{
-    <div class="card" style="width: 18rem;">
-        <div class="card-body">
-            <h5 class="card-title">@searchedUser.FirstName @searchedUser.LastName</h5>
-            <a href="/profileviewer/@searchedUser.ProfileId" class="btn btn-primary">Profile View</a>
+        <div class="td"><input type="text" @bind="inputSearch" placeholder="Search" required></div>
+        <div class="td" id="s-cover">
+            <button @onclick="SearchUsers">
+                <div id="s-circle"></div>
+                <span></span>
+            </button>
         </div>
     </div>
-    
+</div>
 
-}
+
+
+@*   cards for the random profiles to view before searching.
+ *@    <div class="container">
+    <div class="row">
+        @foreach (UserClasses.UserProfiles user in allUsers)
+        {
+            <div class="col-md-4">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">@user.FirstName @user.LastName</h5>
+                        <p> Selling: @user.Selling</p>
+                        <a href="/profileviewer/@user.ProfileId" class="btn btn-primary">Profile View</a>
+                    </div>
+                </div>
+            </div>
+        }
+        @*             cards for the searched users are made here.
+        *@            @foreach (UserClasses.UserProfiles searchedUser in searchedUsers)
+        {
+            <div class="col-md-4">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">@searchedUser.FirstName @searchedUser.LastName</h5>
+                        <p> Selling: @searchedUser.Selling</p>
+                        <a href="/profileviewer/@searchedUser.ProfileId" class="btn btn-primary">Profile View</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 
 
 @code {
@@ -51,6 +61,7 @@
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
     private NpgsqlConnection connection;
 
+    //standard profileview, here you can see just 6 random profiles
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -59,8 +70,7 @@
 
         if (!searchedUsers.Any())
         {
-            string SelectSQL = $"SELECT * FROM userprofiles LIMIT 5;";
-
+            string SelectSQL = $"SELECT * FROM userprofiles LIMIT 6;";
             using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
             {
                 using (NpgsqlDataReader reader = command.ExecuteReader())
@@ -77,16 +87,44 @@
                     }
                 }
             }
+            foreach (UserClasses.UserProfiles user in allUsers)
+            {
+                user.Selling = GetProductsForUser(user.ProfileId).Count;
+            }
         }
-
-
     }
+    private List<ProductClassLibrary.ProductClass> GetProductsForUser(int userId)
+    {
+        List<ProductClassLibrary.ProductClass> products = new List<ProductClassLibrary.ProductClass>();
+        string SelectSQL = $"SELECT * FROM products WHERE seller_id = {userId};";
+        using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+        {
+            using (NpgsqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    ProductClassLibrary.ProductClass product = new ProductClassLibrary.ProductClass
+                        {
+                            Price = (int)reader["price"],
+                            EANNumber = reader["ean_number"].ToString(),
+                            Brand = reader["brand"].ToString(),
+                            Model = reader["model"].ToString(),
+                            Series = reader["series"].ToString(),
+                            ProductID = (int)reader["product_id"]
+                        };
+                    products.Add(product);
+                }
+            }
+            return products;
+        }
+    }
+
+    // specefic profiles, where you have searched for a name.
     private void SearchUsers()
     {
         allUsers.Clear();
         searchedUsers.Clear();
         string SelectSQL = $"SELECT * FROM userprofiles WHERE LOWER( firstname ) LIKE '%{inputSearch.ToLower()}%'";
-
         using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
         {
             using (NpgsqlDataReader reader = command.ExecuteReader())
@@ -98,180 +136,195 @@
                             FirstName = reader["firstname"].ToString(),
                             LastName = reader["lastname"].ToString(),
                             ProfileId = (int)reader["id"]
-                };
+                        };
                     searchedUsers.Add(user);
                 }
             }
         }
+        foreach (UserClasses.UserProfiles user in searchedUsers)
+        {
+            user.Selling = GetProductsForUser(user.ProfileId).Count;
+        }
     }
-   
+
 
 }
+
 
 <style>
 
-   * {
-  outline: none;
-}
+    * {
+        outline: none;
+    }
 
-body {
-  height: 100%;
-  min-height: 100%;
-  
-}
+    body {
+        height: 100%;
+        min-height: 100%;
+    }
 
-body {
-  margin: 0;
-  background-color: darkgrey;
-  background-image: linear-gradient(to right top, #000000, #1e0b15, #2e1227, #3c183f, #41235d, #413375, #39448e, #2155a7, #106bbb, #0081ce, #0098df, #00aeef);
-  background-size:cover;
-  background-repeat: no-repeat;
-  height: 1400px;
-  
-}
+    body {
+        margin: 0;
+        background: rgb(94,94,94);
+        background: radial-gradient(circle, rgba(94,94,94,1) 0%, rgba(45,46,47,1) 100%);
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 1400px;
+    }
 
-.tb {
-  display: table;
-  width: 100%;
-}
+    .tb {
+        display: table;
+        width: 100%;
+    }
 
-.td {
-  display: table-cell;
-  vertical-align: middle;
-}
+    .td {
+        display: table-cell;
+        vertical-align: middle;
+    }
 
-input,
-button {
-  color: #fff;
-  font-family: Nunito;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  background-color: transparent;
-}
+    input,
+    button {
+        color: #8C92AC;
+        font-family: Nunito;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        background-color: transparent;
+    }
 
-#cover {
-  position: absolute;
-  top: 30%;
-  left: 0;
-  right: 0;
-  width: 850px;
-  padding: 35px;
-  margin: -83px auto 0 auto;
-  background-color: #226990;
-  border-radius: 100px;
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-  transform: scale(0.6);
+    #cover {
+        position: absolute;
+        top: 30%;
+        left: 0;
+        right: 0;
+        width: 850px;
+        padding: 35px;
+        margin: -83px auto 0 auto;
+        background-color: white;
+        border-radius: 100px;
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        transform: scale(0.6);
+    }
 
-}
+    form {
+        height: 96px;
+    }
 
-form {
-  height: 96px;
-}
+    input[type="text"] {
+        width: 100%;
+        height: 96px;
+        font-size: 60px;
+        line-height: 1;
+        font-family: Arial, sans-serif;
+    }
 
-input[type="text"] {
-  width: 100%;
-  height: 96px;
-  font-size: 60px;
-  line-height: 1;
-  font-family: Arial, sans-serif;
-}
+        input[type="text"]::placeholder {
+            color: #8C92AC;
+        }
 
-input[type="text"]::placeholder {
-  color: white;
-}
+    #s-cover {
+        width: 1px;
+        padding-left: 35px;
+    }
 
-#s-cover {
-  width: 1px;
-  padding-left: 35px;
-}
+    button {
+        position: relative;
+        display: block;
+        width: 84px;
+        height: 96px;
+        cursor: pointer;
+    }
 
-button {
-  position: relative;
-  display: block;
-  width: 84px;
-  height: 96px;
-  cursor: pointer;
-}
+    #s-circle {
+        position: relative;
+        top: -8px;
+        left: 0;
+        width: 43px;
+        height: 43px;
+        margin-top: 0;
+        border-width: 15px;
+        border: 15px solid #8C92AC;
+        background-color: transparent;
+        border-radius: 50%;
+        transition: 0.5s ease all;
+    }
 
-#s-circle {
-  position: relative;
-  top: -8px;
-  left: 0;
-  width: 43px;
-  height: 43px;
-  margin-top: 0;
-  border-width: 15px;
-  border: 15px solid #fff;
-  background-color: transparent;
-  border-radius: 50%;
-  transition: 0.5s ease all;
-}
+    button span {
+        position: absolute;
+        top: 68px;
+        left: 43px;
+        display: block;
+        width: 45px;
+        height: 15px;
+        background-color: transparent;
+        border-radius: 10px;
+        transform: rotateZ(52deg);
+        transition: 0.5s ease all;
+    }
 
-button span {
-  position: absolute;
-  top: 68px;
-  left: 43px;
-  display: block;
-  width: 45px;
-  height: 15px;
-  background-color: transparent;
-  border-radius: 10px;
-  transform: rotateZ(52deg);
-  transition: 0.5s ease all;
-}
+        button span:before,
+        button span:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 45px;
+            height: 15px;
+            background-color: #8C92AC;
+            border-radius: 10px;
+            transform: rotateZ(0);
+            transition: 0.5s ease all;
+        }
 
-button span:before,
-button span:after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 45px;
-  height: 15px;
-  background-color: #fff;
-  border-radius: 10px;
-  transform: rotateZ(0);
-  transition: 0.5s ease all;
-}
+    #s-cover:hover #s-circle {
+        top: -1px;
+        width: 67px;
+        height: 15px;
+        border-width: 0;
+        background-color: #8C92AC;
+        border-radius: 20px;
+    }
 
-#s-cover:hover #s-circle {
-  top: -1px;
-  width: 67px;
-  height: 15px;
-  border-width: 0;
-  background-color: #fff;
-  border-radius: 20px;
-}
+    #s-cover:hover span {
+        top: 50%;
+        left: 56px;
+        width: 25px;
+        margin-top: -9px;
+        transform: rotateZ(0);
+    }
 
-#s-cover:hover span {
-  top: 50%;
-  left: 56px;
-  width: 25px;
-  margin-top: -9px;
-  transform: rotateZ(0);
-}
+    #s-cover:hover button span:before {
+        bottom: 11px;
+        transform: rotateZ(52deg);
+    }
 
-#s-cover:hover button span:before {
-  bottom: 11px;
-  transform: rotateZ(52deg);
-}
+    #s-cover:hover button span:after {
+        bottom: -11px;
+        transform: rotateZ(-52deg);
+    }
 
-#s-cover:hover button span:after {
-  bottom: -11px;
-  transform: rotateZ(-52deg);
-}
-#s-cover:hover button span:before,
-#s-cover:hover button span:after {
-  right: -6px;
-  width: 40px;
-  background-color: #fff;
-}
+    #s-cover:hover button span:before,
+    #s-cover:hover button span:after {
+        right: -6px;
+        width: 40px;
+        background-color: #8C92AC;
+    }
 
-.card {
-    margin: auto;
-    top: 20%;
-    margin-bottom: 2rem;
-}
+
+    .card {
+        margin: auto;
+        margin-top: 12rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background-color: #8C92AC;
+        border-color: #8C92AC;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: black;
+        }
 
 </style>
