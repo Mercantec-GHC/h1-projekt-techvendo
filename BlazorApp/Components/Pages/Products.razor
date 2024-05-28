@@ -198,7 +198,7 @@
         else
         {
         showNotSignedInMessage = true;
-        redirectTimer = new System.Timers.Timer(3000); // 5 seconds
+        redirectTimer = new System.Timers.Timer(3000); // 3 seconds
         redirectTimer.Elapsed += (sender, e) => NavigateToLoginPage();
         redirectTimer.Start();
         }
@@ -208,8 +208,16 @@ void NavigateToLoginPage()
 {
     string returnUrl = NavigationManager.Uri;
     LoginService.NavigateToLogin(returnUrl);
+    LoginInfo.UserLoggedIn = LoginService.UserLoggedIn;
+    LoginService.OnLoginStatusChanged += UpdateLoginState;
     showNotSignedInMessage = false;
     redirectTimer.Stop();
+}
+
+private void UpdateLoginState()
+{
+        LoginInfo.UserLoggedIn = LoginService.UserLoggedIn;
+        StateHasChanged();
 }
 
 
