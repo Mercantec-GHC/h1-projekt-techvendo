@@ -167,7 +167,7 @@
 
 
 @code {
-    @*List to make layout, sorting, and view box*@
+        @*List to make layout, sorting, and view box*@
     private List<ProductClass> products = new List<ProductClass>();
     private List<ProductClass> productsToShow = new List<ProductClass>();
     private List<ProductClass> filteredProducts = new List<ProductClass>();
@@ -182,7 +182,6 @@
     private bool sortAscending = true;
     private bool showNotSignedInMessage = false;
     private System.Timers.Timer redirectTimer;
-
 
 
     private string searchedItem = "";
@@ -394,8 +393,13 @@ void ApplySort()
                                 Model = reader["model"].ToString(),
                                 Series = reader["series"].ToString(),
                                 Description = reader["description"].ToString(),
-                                Product_Type = reader["product_type"].ToString()
+                                Product_Type = reader["product_type"].ToString(),
+                                Ports = reader["ports"].ToString()
                             };
+                        if (product.Product_Type == "GPU")
+                        {
+                            product.VRAM = (int)reader["vram"];
+                        }
                         products.Add(product);
                         productsToShow.Add(product);
                     }
