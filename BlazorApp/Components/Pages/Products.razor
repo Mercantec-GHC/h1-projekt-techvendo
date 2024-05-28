@@ -150,7 +150,7 @@
 
                     <div class="sort-reset">
                         <label style="color: white;">Clear filter</label>
-                        <button @onclick="ProductReset">Clear filter</button>
+                       <button @onclick="ClearSortSelections">Clear filter</button>
                     </div>
 
                 </div>
@@ -236,6 +236,12 @@ void CloseSortModal()
     sortModal = false;
 }
 
+    void ClearSortSelections()
+    {
+    selectedBrandOption = "";
+    selectedTypeOption = "";
+    }
+
 void ApplySort()
 {
     productsToShow.Clear();
@@ -275,6 +281,8 @@ void ApplySort()
             }
         }
     }
+
+
 
     // Apply Sort Order (ascending or descending)
     productsToShow = sortAscending ? productsToShow.OrderBy(p => p.Price).ToList() : productsToShow.OrderByDescending(p => p.Price).ToList();
