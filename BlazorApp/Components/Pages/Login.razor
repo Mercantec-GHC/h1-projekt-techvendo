@@ -11,12 +11,12 @@
 
 <div class="container">
     <h1 class="loginTitle">LOG IN</h1>
-    <div class="EmailPassword">
-        <input class="email" @bind="Email" placeholder="Enter Email..." />
-        <br />
-        <input class="password" @bind="Password" placeholder="Enter Password..." type="password" />
-        <br />
-    </div>
+        <div class="EmailPassword">
+            <input class="email" @oninput="UpdateEmail" @onkeydown="EnterKeyPressed" @bind="Email" placeholder="Enter Email..." />
+            <br />
+            <input class="password" @oninput="UpdatePassword" @onkeydown="EnterKeyPressed" @bind="Password" placeholder="Enter Password..." type="password" />
+            <br />
+        </div>
     <button class="login-btn" @onclick="loginCheck">Login</button>
     <br />
     <a class="createNew" @onclick="navigateToCreateAccount">Create a new account</a>
@@ -24,12 +24,12 @@
 
 <style>
     body {
-    background-image: url(/images/download.jpg);
-    background-repeat: no-repeat;
-    margin: 0;
-    padding: 0;
-    background-size: cover;
-}
+        background-image: url(/images/download.jpg);
+        background-repeat: no-repeat;
+        margin: 0;
+        padding: 0;
+        background-size: cover;
+    }
 </style>
 
 @if (loginFailed)
@@ -81,6 +81,24 @@
         returnUrl = queryParameters["returnUrl"];
     }
 
+    private void EnterKeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            loginCheck();
+        }
+    }
+
+    private void UpdateEmail(ChangeEventArgs e)
+    {
+        Email = e.Value.ToString();
+    }
+
+    private void UpdatePassword(ChangeEventArgs e)
+    {
+        Password = e.Value.ToString();
+    }
+
     private void loginCheck()
     {
         loginFailed = false;
@@ -121,5 +139,3 @@
     }
 
 }
-
-
