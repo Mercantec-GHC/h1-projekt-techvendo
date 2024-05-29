@@ -1,7 +1,7 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/GeUOgVxP)
 # H1-Projekt TechVendo
 Her skal alt omkring jeres projekt være. Alle jeres OOP klasser, Diagrammer (UML, Database, mm.), Blazorkode og SQL scripts. 
-Projektet han findes her - [Notion](https://www.notion.so/mercantec/Projekt-H1-Webshop-3eafa5e658f44a21a7edea55d419c3e8)
+Projektet kan findes her - [Notion](https://www.notion.so/mercantec/Projekt-H1-Webshop-3eafa5e658f44a21a7edea55d419c3e8)
 
 Det er delt op i 4 mapper 
 

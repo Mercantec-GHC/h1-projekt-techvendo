@@ -18,32 +18,42 @@
     </div>
 </div>
 
-
-
-@*   cards for the random profiles to view before searching.
- *@    <div class="container">
+    <div class="container">
     <div class="row">
         @foreach (UserClasses.UserProfiles user in allUsers)
         {
             <div class="col-md-4">
                 <div class="card" style="width: 18rem;">
                     <div class="card-body">
-                        <h5 class="card-title">@user.FirstName @user.LastName</h5>
-                        <p> Selling: @user.Selling</p>
-                        <a href="/profileviewer/@user.ProfileId" class="btn btn-primary">Profile View</a>
+                        <h5 class="card-title" style="text-decoration: underline; font-weight: bold;">@user.FirstName @user.LastName</h5>
+                        @if (user.Selling == 1)
+                        {
+                            <p> Selling: @user.Selling product</p>
+                        }
+                        else
+                        {
+                            <p> Selling: @user.Selling products</p>
+                        }
+                        <a href="/profileviewer/@user.ProfileId" class="btn btn-primary">View Profile</a>
                     </div>
                 </div>
             </div>
         }
-        @*             cards for the searched users are made here.
-        *@            @foreach (UserClasses.UserProfiles searchedUser in searchedUsers)
+
+        @foreach (UserClasses.UserProfiles searchedUser in searchedUsers)
         {
             <div class="col-md-4">
                 <div class="card" style="width: 18rem;">
                     <div class="card-body">
-                        <h5 class="card-title">@searchedUser.FirstName @searchedUser.LastName</h5>
-                        <p> Selling: @searchedUser.Selling</p>
-                        <a href="/profileviewer/@searchedUser.ProfileId" class="btn btn-primary">Profile View</a>
+                        <h5 class="card-title" style="text-decoration: underline; font-weight: bold;">@searchedUser.FirstName @searchedUser.LastName</h5>
+                        @if (searchedUser.Selling == 1) 
+                        {
+                            <p> Selling: @searchedUser.Selling product</p>
+                        } else
+                        {
+                            <p> Selling: @searchedUser.Selling products</p>
+                        }
+                        <a href="/profileviewer/@searchedUser.ProfileId" class="btn btn-primary">View Profile</a>
                     </div>
                 </div>
             </div>
@@ -51,17 +61,15 @@
     </div>
 </div>
 
-
 @code {
     private string inputSearch = "";
     private List<UserClasses.UserProfiles> allUsers = new List<UserClasses.UserProfiles>();
     private List<UserClasses.UserProfiles> searchedUsers = new List<UserClasses.UserProfiles>();
 
-
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+
     private NpgsqlConnection connection;
 
-    //standard profileview, here you can see just 6 random profiles
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -70,7 +78,7 @@
 
         if (!searchedUsers.Any())
         {
-            string SelectSQL = $"SELECT * FROM userprofiles LIMIT 6;";
+            string SelectSQL = $"SELECT * FROM userprofiles ORDER BY RANDOM() LIMIT 6;";
             using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
             {
                 using (NpgsqlDataReader reader = command.ExecuteReader())
@@ -93,10 +101,13 @@
             }
         }
     }
+
     private List<ProductClassLibrary.ProductClass> GetProductsForUser(int userId)
     {
         List<ProductClassLibrary.ProductClass> products = new List<ProductClassLibrary.ProductClass>();
+
         string SelectSQL = $"SELECT * FROM products WHERE seller_id = {userId};";
+
         using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
         {
             using (NpgsqlDataReader reader = command.ExecuteReader())
@@ -119,12 +130,13 @@
         }
     }
 
-    // specefic profiles, where you have searched for a name.
     private void SearchUsers()
     {
         allUsers.Clear();
         searchedUsers.Clear();
+
         string SelectSQL = $"SELECT * FROM userprofiles WHERE LOWER( firstname ) LIKE '%{inputSearch.ToLower()}%'";
+
         using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
         {
             using (NpgsqlDataReader reader = command.ExecuteReader())
@@ -141,15 +153,13 @@
                 }
             }
         }
+
         foreach (UserClasses.UserProfiles user in searchedUsers)
         {
             user.Selling = GetProductsForUser(user.ProfileId).Count;
         }
     }
-
-
 }
-
 
 <style>
 
@@ -317,8 +327,8 @@
         margin-top: 19rem;
         margin-bottom: 1rem;
         text-align: center;
-        width: 100%; /* Allow cards to fill available space */
-        max-width: 300px; /* Set a maximum width for smaller screens */
+        width: 100%;
+        max-width: 300px;
         box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 5px, rgba(0, 0, 0, 0.1) 0px 1px 3px;
         border-radius: 5px;
     }
