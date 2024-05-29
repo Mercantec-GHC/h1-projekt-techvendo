@@ -109,12 +109,14 @@
 </body>
 
 
+
 @code {
     [Parameter]
     public string UserId { get; set; }
     private string primaryKeyColumn;
     private bool editDescPressed = false;
     private string writtenDescription = "";
+   
 
     private int sellingCardsLimit = 0;
 
@@ -185,7 +187,6 @@
                 connection.Close();
             }
         }
-
     }
 
     private void EditDescription()
@@ -216,4 +217,5 @@
         editDescPressed = false;
         NavManager.NavigateTo(NavManager.Uri, true);
     }
+
 }
