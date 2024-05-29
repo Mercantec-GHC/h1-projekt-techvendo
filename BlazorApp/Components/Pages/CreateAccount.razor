@@ -1,6 +1,7 @@
 ﻿@page "/createaccount"
 @using Npgsql;
 @inject NavigationManager NavigationManager
+@inject LoginService LoginService
 
 <PageTitle>TechVendo</PageTitle>
 
@@ -59,7 +60,7 @@
 @if (accountCreated)
 {
     Thread.Sleep(450);
-    NavigationManager.NavigateTo("/login");
+    LoginService.NavigateToLogin("/");
 }
 
 @if (accountNotCreated)
