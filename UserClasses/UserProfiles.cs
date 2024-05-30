@@ -1,6 +1,6 @@
 ﻿namespace UserClasses
 {
-    public class UserProfiles
+    public class UserProfiles : UserData
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

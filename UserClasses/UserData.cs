@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UserClasses
 {
-    internal class UserData
+    public class UserData
     {
         public string Email { get; set; }
         public string Password { get; set; }
