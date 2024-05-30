@@ -39,12 +39,101 @@
 
     #descriptionBox p {
         color: #CACACA;
+        
     }
 
+
+.editDescription {
+    border-radius: 50px;
+    background-color: #1C8CB6;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 1070px;
+}
+
+    .editDescription p {
+        margin: 0;
+
+    }
+
+    .editDescription:hover {
+        background-color: #93C4D6;
+    }
+/* For screens smaller than 1200px, adjust the margin-left */
+@media (max-width: 1200px) {
+    .editDescription {
+        margin-left: 50px;
+    }
+}
+
+/* For screens smaller than 600px, adjust the margin-left and padding */
+@media (max-width: 600px) {
+    .editDescription {
+        margin-left: 20px;
+        padding: 5px 10px;
+    }
+}
+
+.description-infi {
+    width: 100%;
+    height: 150px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    font-size: 16px;
+    resize: none;
+}
+
+.close-btn {
+border-radius: 50px;
+    background-color: #B32F2F;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+    .close-btn p {
+        margin: 0;
+
+    }
+
+    .close-btn:hover {
+        background-color: #CB6F6F;
+}
+
+.save-btn {
+    border-radius: 50px;
+    background-color: #1C8CB6;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+    .save-btn p {
+        margin: 0;
+
+    }
+
+    .save-btn:hover {
+        background-color: #93C4D6;
+}
+
 #descriptionUnderline {
-    margin-top: 10em; 
-    border: 1px solid white; 
-    margin-left: 85px; 
+    margin-top: 10em;
+    border: 1px solid white;
+    margin-left: 85px;
     width: 60%;
 }
 
@@ -91,6 +180,7 @@
     align-items: center;
     margin-bottom: 20px; /* Add some space below the picture */
     margin-top: 90px; /* Add some space above the picture */
+    margin-left: 20px; /* Add some space to the left of the picture */
 }
 
 #profilePicture {
