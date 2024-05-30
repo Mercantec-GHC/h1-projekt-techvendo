@@ -12,9 +12,9 @@
 <div class="container">
     <h1 class="loginTitle">LOG IN</h1>
         <div class="EmailPassword">
-            <input class="email" @oninput="UpdateEmail" @onkeydown="EnterKeyPressed" @bind="Email" placeholder="Enter Email..." />
+            <input class="email" @oninput="UpdateEmail" @onkeydown="EnterKeyPressed" @bind="userLoggingIn.Email" placeholder="Enter Email..." />
             <br />
-            <input class="password" @oninput="UpdatePassword" @onkeydown="EnterKeyPressed" @bind="Password" placeholder="Enter Password..." type="password" />
+            <input class="password" @oninput="UpdatePassword" @onkeydown="EnterKeyPressed" @bind="userLoggingIn.Password" placeholder="Enter Password..." type="password" />
             <br />
         </div>
     <button class="login-btn" @onclick="loginCheck">Login</button>
@@ -44,11 +44,11 @@
     <div class="success">
         Logged In!
         <br />
-        Welcome, @dbFirstname @dbLastname
+        Welcome, @userFromDb.FirstName @userFromDb.LastName
     </div>
     if (!string.IsNullOrEmpty(returnUrl))
     {
-        LoginService.RedirectLastPage(dbFirstname, dbLastname, loginSuccess, returnUrl, dbProfileId);
+        LoginService.RedirectLastPage(userFromDb.FirstName, userFromDb.LastName, loginSuccess, returnUrl, userFromDb.ProfileId);
     }
 }
 
@@ -56,14 +56,9 @@
     [Parameter]
     public string returnUrl { get; set; } = string.Empty;
 
-    private string Email;
-    private string Password;
-    private string dbEmail;
-    private string dbPassword;
-    private string dbFirstname;
-    private string dbLastname;
-    private int dbProfileId;
-
+    public UserClasses.UserData userLoggingIn = new UserClasses.UserData();
+    public UserClasses.UserProfiles userFromDb = new UserClasses.UserProfiles();
+  
     private bool loginSuccess = false;
     private bool loginFailed = false;
 
@@ -91,22 +86,22 @@
 
     private void UpdateEmail(ChangeEventArgs e)
     {
-        Email = e.Value.ToString();
+        userLoggingIn.Email = e.Value.ToString();
     }
 
     private void UpdatePassword(ChangeEventArgs e)
     {
-        Password = e.Value.ToString();
+        userLoggingIn.Password = e.Value.ToString();
     }
 
     private void loginCheck()
     {
         loginFailed = false;
         loginSuccess = false;
-        dbEmail = null;
-        dbPassword = null;
+        userFromDb.Email = null;
+        userFromDb.Password = null;
 
-        string SelectSQL = $"SELECT * FROM userprofiles WHERE email = '{Email}' AND password = crypt('{Password}', password)";
+        string SelectSQL = $"SELECT * FROM userprofiles WHERE email = '{userLoggingIn.Email}' AND password = crypt('{userLoggingIn.Password}', password)";
 
         using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
         {
@@ -114,17 +109,17 @@
             {
                 while (reader.Read())
                 {
-                    dbEmail = reader["email"].ToString();
-                    dbPassword = reader["password"].ToString();
-                    dbFirstname = reader["firstname"].ToString();
-                    dbLastname = reader["lastname"].ToString();
-                    dbProfileId = (int)reader["id"];
+                    userFromDb.Email = reader["email"].ToString();
+                    userFromDb.Password = reader["password"].ToString();
+                    userFromDb.FirstName = reader["firstname"].ToString();
+                    userFromDb.LastName = reader["lastname"].ToString();
+                    userFromDb.ProfileId = (int)reader["id"];
                 }
             }
         }
         Thread.Sleep(800);
 
-        if (string.IsNullOrEmpty(dbEmail) && string.IsNullOrEmpty(dbPassword))
+        if (string.IsNullOrEmpty(userFromDb.Email) && string.IsNullOrEmpty(userFromDb.LastName))
         {
             loginFailed = true;
         }
