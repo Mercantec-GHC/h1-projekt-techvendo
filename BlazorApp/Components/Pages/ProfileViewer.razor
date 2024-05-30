@@ -44,7 +44,7 @@
             <br />
             @foreach (var product in productList)
             {
-                if (sellingCardsLimit <= 2) //Makes sure it cant show more than 4 items
+                if (sellingCardsLimit <= 2)                         
                 {
                     sellingCardsLimit++;
                     <SellingCards SellingProduct="product"></SellingCards>
@@ -201,6 +201,5 @@
         editDescPressed = false;
         NavManager.NavigateTo(NavManager.Uri, true);
     }
-
 }
 

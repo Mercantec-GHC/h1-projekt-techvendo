@@ -201,21 +201,21 @@
         height: 100vh;
         justify-content: center;
         color: white;
-        flex-direction: column; /* Add this line */
+        flex-direction: column;         
         text-align: center;
     }
 
     @@media (max-width: 768px) {
         .hero-content {
-            height: 50vh; /* Reduce the height on smaller screens */
+            height: 50vh;               
         }
 
             .hero-content h1 {
-                font-size: 24px; /* Reduce the font size on smaller screens */
+                font-size: 24px;                 
             }
 
             .hero-content p {
-                font-size: 12px; /* Reduce the font size on smaller screens */
+                font-size: 12px;                 
             }
     }
 
@@ -229,7 +229,7 @@
     }
 
         .title-hero.loaded {
-            border-color: #698FC0; /* End with a blue border */
+            border-color: #698FC0;             
         }
 
     .hero-content {
@@ -244,25 +244,25 @@
     }
 
     .products-btn {
-        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-        border: 2px solid #fff; /* Solid white border */
-        font-family: Arial, sans-serif; /* Light font family */
-        font-style: italic; /* Italic font style */
-        font-size: 20px; /* Increase font size */
-        color: #fff; /* White text color */
-        text-decoration: none; /* Remove default link underline */
-        cursor: pointer; /* Indicate clickable button */
-        transition: all 0.2s ease-in-out; /* Smooth transition on hover */
-        display: inline-block; /* Allow for inline positioning */
-        padding: 15px 30px; /* Increase button size */
-        border-radius: 20px; /* More rounded corners */
+        background-color: rgba(0, 0, 0, 0.5);       
+        border: 2px solid #fff;         
+        font-family: Arial, sans-serif;         
+        font-style: italic;         
+        font-size: 20px;         
+        color: #fff;         
+        text-decoration: none;           
+        cursor: pointer;         
+        transition: all 0.2s ease-in-out;           
+        display: inline-block;           
+        padding: 15px 30px;         
+        border-radius: 20px;         
         width: 300px;
     }
 
         .products-btn:hover {
             color: #000;
-            background-color: #eee; /* Slightly darker background on hover */
-            transform: translateY(-3px); /* Bounce effect on hover */
+            background-color: #eee;             
+            transform: translateY(-3px);           
         }
 
 
@@ -281,7 +281,7 @@
             margin-left: auto;
             padding: 10px;
             border: 2px solid white;
-            border-radius: 50px; /* This will make the input field pill-shaped */
+            border-radius: 50px;                 
             background-color: black;
             color: white;
             outline: none;
@@ -295,7 +295,6 @@
             color: white;
         }
 
-    /* Chrome, Safari, Edge, Opera REMOVES THE X */
     .header input[type="search"]::-webkit-search-decoration,
     .header input[type="search"]::-webkit-search-cancel-button,
     .header input[type="search"]::-webkit-search-results-button,
@@ -303,7 +302,6 @@
         display: none;
     }
 
-    /* Firefox */
     .header input[type="search"]::-moz-search-decoration,
     .header input[type="search"]::-moz-search-cancel-button,
     .header input[type="search"]::-moz-search-results-button,
