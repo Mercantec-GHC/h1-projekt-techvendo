@@ -10,44 +10,56 @@
 
 @if (showNotSignedInMessage)
 {
-<div class="alert alert-warning alert-dismissible fade show" style="background-color: #226990" role="alert">
-    <strong style="color: #ffff">Warning!</strong> <p  style="color: #ffff">You are not signed in. You will be redirected to the login page shortly.</p>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-
-}
-
-@* Header/title name/page name*@
-<div class="header d-flex justify-content-center align-items-center pt-3 text-center">
-    <h1 class="prod-title">PRODUCTS</h1>
+    <div class="alert alert-warning alert-dismissible fade show" style="background-color: #226990" role="alert">
+        <strong style="color: #ffff">Warning!</strong> 
+        <p  style="color: #ffff"> You are not signed in. You will be redirected to the login page shortly. </p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-<div class="productSearch">
-    <input @bind="searchedItem" class="searchbar" placeholder="Search...">  
-    <button @onclick="SearchItems" class="search-btn">Search</button>
+}
+   
+<div class="header d-flex justify-content-center align-items-center pt-3 text-center">
+    <h1 class="prod-title">PRODUCTS</h1>
 </div>
 
 
 
-@*making the sort btn*@
+
+
 <div class="sort-btn d-flex align-content-center align-items-center pt-3 text-center">
     <button @onclick="ToggleSort">Sort Item</button>
+
     <div class="sellpage-btn-container">
     <button class="sellpage-btn" @onclick="NavigateToSellPage">Sell Item</button>
     </div>
+
+    <div class="productSearch">
+    <input @bind="searchedItem" class="searchbar" placeholder="Search...">  
+    <button @onclick="SearchItems" class="search-btn">Search</button>
+    </div>
 </div>
 
 
-
-@*Cards/prodcut layout*@
-<section class="products-section">
     <div class="container">
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
             @foreach (var product in productsToShow)
             {
                 <div class="col">
                     <div class="card shadow-sm">
-                        <img src="..\images\product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" class="card-img-top" alt="Product Image">
+                    @switch (product.Product_Type)
+                    {
+                        case "GPU":
+                            <img src="..\images\product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" class="card-img-top" alt="Product Image">
+                            break;
+
+                        case "CPU":
+                            <img src="..\images\amdupscale.png" class="card-img-top" alt="Product Image">
+                            break;
+
+                        case "RAM":
+                            <img src="..\images\gskillram.png" class="card-img-top" alt="Product Image">
+                            break;
+                    }
                         <div class="card-body">
                             <h5 class="card-title">@product.Brand @product.Series</h5>
                             <p class="card-text">
@@ -67,26 +79,39 @@
             }
         </div>
     </div>
-</section>
 
-
-@*When you click view you get product information*@
 @if (showModal)
 {
     <div class="modal" tabindex="-1" style="display:block;">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content" style="background-color: #282829;">
                 <div class="modal-header">
-                    <h5 class="modal-title">@selectedProduct.Brand</h5>
+                    <h5 class="viewModalTitle">@selectedProduct.Brand @selectedProduct.Series @selectedProduct.Model</h5>
                     <button type="button" class="btn-close" @onclick="CloseModal"></button>
                 </div>
+
                 <div class="modal-body">
+                    @switch (selectedProduct.Product_Type)
+                    {
+                        case "GPU":
+                        <p class="viewModalText"><strong>Ports:</strong> @selectedProduct.Ports</p>
+                        <p class="viewModalText"><strong>VRAM: </strong> @selectedProduct.VRAM </p>
+                        break;
 
-                    <p><strong>Ports:</strong> @selectedProduct.Ports</p>
-                    <p><strong>VRAM: </strong> @selectedProduct.VRAM</p>
-                    <p><strong>Description: </strong>@selectedProduct.Description</p>
+                        case "CPU":
+                        <p class="viewModalText"><strong>Cores:</strong> @selectedProduct.Cores     </p>
+                        <p class="viewModalText"><strong>Threads: </strong> @selectedProduct.Threads</p>
+                        break;
 
+                        case "RAM":
+                        <p class="viewModalText"><strong>Capacity:</strong> @selectedProduct.Capacity</p>
+                        <p class="viewModalText"><strong>Speed: </strong> @selectedProduct.RamSpeed  </p>
+                        break;
+                    }
+                     <p class="viewModalSeller"> <strong>Seller: </strong> <a @onclick="() => NavigateToSeller(selectedProduct.SellerID)"> @GetSellerName(selectedProduct.SellerID)</a></p> 
+                     <p class="viewModalText"><strong>Description: </strong>@selectedProduct.Description</p>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
                 </div>
@@ -119,10 +144,12 @@
                             <option value="ThermalPaste">Thermal Paste</option>
                             </select>
                     </div>
+
                     <div class="sort-by-brand">
                         <label style="color: black;">Sort By Brand:</label>
                         <select @bind="selectedBrandOption">
                             <option value=""></option>
+
                                 @if (ListedBrands.Any())
                                 {
                                     ListedBrands.Clear();
@@ -150,7 +177,7 @@
 
                     <div class="sort-reset">
                         <label style="color: white;">Clear filter</label>
-                        <button @onclick="ProductReset">Clear filter</button>
+                       <button @onclick="ClearSortSelections">Clear filter</button>
                     </div>
 
                 </div>
@@ -166,140 +193,140 @@
 
 
 @code {
-    @*List to make layout, sorting, and view box*@
     private List<ProductClass> products = new List<ProductClass>();
     private List<ProductClass> productsToShow = new List<ProductClass>();
-    private List<ProductClass> filteredProducts = new List<ProductClass>();
     private List<ProductClass> productsToRemove = new List<ProductClass>();
     private List<string> ListedBrands = new List<string>();
+
     private bool showModal = false;
     private bool sortModal = false;
+
     private ProductClass selectedProduct = new ProductClass();
     private string selectedSortOption = "Price";
-    private string selectedTypeOption = "Product_Type";
-    private string selectedBrandOption = "Brand";
+    private string selectedTypeOption = "";
+    private string selectedBrandOption = "";
+
     private bool sortAscending = true;
     private bool showNotSignedInMessage = false;
+
     private System.Timers.Timer redirectTimer;
-
-
 
     private string searchedItem = "";
 
-    @*private void to redirect to sellpage*@
+    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+    private NpgsqlConnection connection;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        connection = new NpgsqlConnection(connectionString);
+        products = GetProducts("SELECT * FROM products");
+        SortProducts();
+    }
+
     private void NavigateToSellPage()
     {
         if (LoginInfo.UserLoggedIn == true)
         {
             NavigationManager.NavigateTo("/products/sellpage");
-
         }
         else
         {
-        showNotSignedInMessage = true;
-        redirectTimer = new System.Timers.Timer(3000); // 5 seconds
-        redirectTimer.Elapsed += (sender, e) => NavigateToLoginPage();
-        redirectTimer.Start();
+            showNotSignedInMessage = true;
+            redirectTimer = new System.Timers.Timer(3000); 
+            redirectTimer.Elapsed += (sender, e) => NavigateToLoginPage();
+            redirectTimer.Start();
         }
     }
 
-void NavigateToLoginPage()
-{
-    string returnUrl = NavigationManager.Uri;
-    LoginService.NavigateToLogin(returnUrl);
-    showNotSignedInMessage = false;
-    redirectTimer.Stop();
-}
+    void NavigateToLoginPage()
+    {
+        string returnUrl = NavigationManager.Uri;
+        LoginService.NavigateToLogin(returnUrl);
+        LoginInfo.UserLoggedIn = LoginService.UserLoggedIn;
+        LoginService.OnLoginStatusChanged += UpdateLoginState;
+        showNotSignedInMessage = false;
+        redirectTimer.Stop();
+    }
 
+    void UpdateLoginState()
+    {
+        LoginInfo.UserLoggedIn = LoginService.UserLoggedIn;
+        StateHasChanged();
+    }
 
-
-    @*function for the view boxes to get information*@
     void OpenModal(ProductClass product)
     {
         selectedProduct = product;
         showModal = true;
     }
 
-    @*Making sure you can closer the information box*@
     void CloseModal()
     {
         showModal = false;
     }
 
     void ToggleSort()
-{
-    sortModal = !sortModal;
-}
-
-void CloseSortModal()
-{
-    sortModal = false;
-}
-
-void ApplySort()
-{
-    productsToShow.Clear();
-
-    foreach (ProductClass product in products)
     {
-        productsToShow.Add(product);
+        sortModal = !sortModal;
     }
 
-    productsToRemove.Clear();
-
-    // Filter by Product Type (if selected)
-    if (!string.IsNullOrEmpty(selectedTypeOption))
+    void NavigateToSeller(int sellerId)
     {
-        foreach (ProductClass product in productsToShow)
+        NavigationManager.NavigateTo($"/profileviewer/{sellerId}");
+    }
+
+    void CloseSortModal()
+    {
+        sortModal = false;
+    }
+
+    void ClearSortSelections()
+    {
+        selectedBrandOption = "";
+        selectedTypeOption = "";
+    }
+
+    void ApplySort()
+    {
+        productsToShow.Clear();
+        productsToRemove.Clear();
+
+        foreach (ProductClass product in products)
         {
-            if (product.Product_Type != selectedTypeOption)
+            productsToShow.Add(product);
+        }
+
+        if (!string.IsNullOrEmpty(selectedTypeOption))
+        {
+            foreach (ProductClass product in productsToShow)
             {
-                productsToRemove.Add(product);
+                if (product.Product_Type != selectedTypeOption)
+                {
+                    productsToRemove.Add(product);
+                }
             }
         }
-    }
 
-    if (selectedBrandOption == "Brand") 
+        if (!string.IsNullOrEmpty(selectedBrandOption))
         {
-            selectedBrandOption = "";
-        }
-
-    // Filter by Brand (if selected)
-    if (!string.IsNullOrEmpty(selectedBrandOption))
-    {
-        foreach (ProductClass product in productsToShow)
-        {
-            if (product.Brand != selectedBrandOption)
+            foreach (ProductClass product in productsToShow)
             {
-                productsToRemove.Add(product);
+                if (product.Brand != selectedBrandOption)
+                {
+                    productsToRemove.Add(product);
+                }
             }
         }
-    }
 
-    // Apply Sort Order (ascending or descending)
-    productsToShow = sortAscending ? productsToShow.OrderBy(p => p.Price).ToList() : productsToShow.OrderByDescending(p => p.Price).ToList();
+        productsToShow = sortAscending ? productsToShow.OrderBy(p => p.Price).ToList() : productsToShow.OrderByDescending(p => p.Price).ToList();
 
-    // Remove filtered products from the displayed list
-    foreach (ProductClass product in productsToRemove)
-    {
-        productsToShow.Remove(product);
-    }
+        foreach (ProductClass product in productsToRemove)
+        {
+            productsToShow.Remove(product);
+        }
 
-    sortModal = false; // Close the sorting modal after applying filters
-}
-
-
-    @*connection to our sql server*@
-    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
-    private NpgsqlConnection connection;
-
-    @*getting the information form our sql server*@
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        connection = new NpgsqlConnection(connectionString);
-        products = GetProducts();
-        SortProducts();
+        sortModal = false; 
     }
 
     private void SearchItems()
@@ -309,61 +336,24 @@ void ApplySort()
 
         if (searchedItem != "")
         {
-            string SelectSQL = $"SELECT * FROM products WHERE LOWER( series ) LIKE '%{searchedItem.ToLower()}%'";
-            try
-            {
-                connection.Open();
-                using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
-                {
-                    using (NpgsqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var product = new ProductClass
-                                {
-                                    Price = (int)reader["price"],
-                                    EANNumber = reader["ean_number"].ToString(),
-                                    Brand = reader["brand"].ToString(),
-                                    Model = reader["model"].ToString(),
-                                    Series = reader["series"].ToString(),
-                                    Description = reader["description"].ToString(),
-                                    Product_Type = reader["product_type"].ToString()
-                                };
-                            products.Add(product);
-                            productsToShow.Add(product);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-            }
-            finally
-            {
-                if (connection.State == System.Data.ConnectionState.Open)
-                {
-                    connection.Close();
-                }
-            }
+            string SearchSQL = $"SELECT * FROM products WHERE LOWER( series ) LIKE '%{searchedItem.ToLower()}%'";
+            GetProducts(SearchSQL);
         }
         else
         {
-            GetProducts();
+            GetProducts("SELECT * FROM products");
         }
 
     }
 
-
-    public List<ProductClass> GetProducts()
+    public List<ProductClass> GetProducts(string inputSQL)
     {
         productsToShow.Clear();
         try
         {
             connection.Open();
-            string SelectSQL = "SELECT * FROM products";
 
-            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+            using (NpgsqlCommand command = new NpgsqlCommand(inputSQL, connection))
             {
                 using (NpgsqlDataReader reader = command.ExecuteReader())
                 {
@@ -377,8 +367,26 @@ void ApplySort()
                                 Model = reader["model"].ToString(),
                                 Series = reader["series"].ToString(),
                                 Description = reader["description"].ToString(),
-                                Product_Type = reader["product_type"].ToString()
+                                Product_Type = reader["product_type"].ToString(),
+                                Ports = reader["ports"].ToString(),
+                                SellerID = (int)reader["seller_id"]
                             };
+                        switch (product.Product_Type)
+                        {
+                            case "GPU":
+                                product.VRAM = (int)reader["vram"];
+                                break;
+
+                            case "CPU":
+                                product.Cores = (int)reader["cores"];
+                                product.Threads = (int)reader["threads"];
+                                break;
+                            case "RAM":
+                                product.Capacity = (int)reader["capacity"];
+                                product.RamSpeed = (int)reader["ramspeed"];
+                                break;
+                        }
+
                         products.Add(product);
                         productsToShow.Add(product);
                     }
@@ -400,6 +408,35 @@ void ApplySort()
         return products;
     }
 
+    public string GetSellerName(int sellerId)
+    {
+        string fullName = "";
+
+        try
+        {
+            connection.Open();
+            string SelectSQL = $"SELECT * FROM userprofiles WHERE id = {sellerId}";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+            {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        fullName = $"{(string)reader["firstname"]} {(string)reader["lastname"]}";
+                    }
+                }
+            }
+        }
+        finally
+        {
+            if (connection.State == System.Data.ConnectionState.Open)
+            {
+                connection.Close();
+            }
+        }
+        return fullName;
+    }
 
     void SortProducts()
     {
@@ -420,81 +457,25 @@ void ApplySort()
         SortProducts();
     }
 
-    void ToggleSort2()
-    {
-        productsToShow.Clear();
-
-        foreach (ProductClass product in products)
-        {
-            productsToShow.Add(product);
-        }
-
-        productsToRemove.Clear();
-
-        if (selectedTypeOption == "Product_Type")
-        {
-            selectedTypeOption = "";
-        }
-
-        if (!string.IsNullOrEmpty(selectedTypeOption))
-        {
-            foreach (ProductClass product in products)
-            {
-                if (product.Product_Type != selectedTypeOption)
-                {
-                    productsToRemove.Add(product);
-                }
-            }
-        }
-
-        if (selectedBrandOption == "Brand")
-        {
-            selectedBrandOption = "";
-        } 
-
-        if (!string.IsNullOrEmpty(selectedBrandOption))
-        {
-            foreach (ProductClass product in products)
-            {
-                if (product.Brand != selectedBrandOption)
-                {
-                    productsToRemove.Add(product);
-                }
-            }
-        }
-
-        foreach (ProductClass product in productsToRemove)
-        {
-            productsToShow.Remove(product);
-        }
-    }
-
-    void ProductReset()
-    {
-        productsToShow.Clear();
-        foreach (ProductClass product in products)
-        {
-            productsToShow.Add(product);
-        }
-    }
 }
 
 <style>
-     body {
-        background-color: #111111;
-        overflow-x: hidden;
+
+    body {
+    background-color: #111111;
+    overflow-x: hidden;
 }
-.sort-btn{
+
+.sort-btn {
     position: relative;
-    left:295px;
+    left: 295px;
 }
 
 .prod-title {
-    color:white;
-    padding:20px;
+    color: white;
+    padding: 20px;
     font-size: 50px;
     font-family: Arial, sans-serif;
-
 }
 
 .card-body, .card {
@@ -506,13 +487,13 @@ void ApplySort()
 }
 
 .btn-outline-secondary {
-    background-color:grey;
+    background-color: grey;
     color: white;
     box-shadow: 3px 4px 3px rgba(0, 0, 0, 0.2);
 }
 
 .sellpage-btn-container {
-    padding: 20px; /* Adjust as needed */
+    padding: 20px; 
 }
 
 .sellpage-btn {
@@ -531,13 +512,12 @@ void ApplySort()
     font-family: Arial, sans-serif;
 }
 
-.sellpage-btn:hover {
-    background-color: black;
-    color: white;
-    border: 2px solid #226990;
-}
+    .sellpage-btn:hover {
+        background-color: black;
+        color: white;
+        border: 2px solid #226990;
+    }
 
-/* Styling for sort button */
 .sort-btn button {
     background-color: #226990;
     color: white;
@@ -550,28 +530,25 @@ void ApplySort()
     margin: 4px 2px;
     transition-duration: 0.4s;
     cursor: pointer;
-    border-radius: 50px; /* Increase border-radius for pill shape */
+    border-radius: 50px;
     font-family: Arial, sans-serif;
 }
 
-.sort-btn button:hover {
-    background-color: black;
-    color: white;
-    border: 2px solid #226990;
-}
+    .sort-btn button:hover {
+        background-color: black;
+        color: white;
+        border: 2px solid #226990;
+    }
 
 
-/* Styling for product type select */
 .product_type select {
     border-radius: 5px;
 }
 
-/* Styling for brand select */
 .brand select {
     border-radius: 5px;
 }
 
-/* Styling for sorting options */
 .sorting-options select {
     border-radius: 5px;
 }
@@ -582,7 +559,6 @@ void ApplySort()
     color: white;
 }
 
-/* Styling for reset button */
 .sort-reset button {
     border-radius: 5px;
     background-color: #226990;
@@ -591,38 +567,84 @@ void ApplySort()
 
 .productSearch {
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
     margin: auto;
     width: 50%;
     gap: 10px;
 }
-.searchbar 
-{ 
-    flex: 1;
-    padding: 8px;
+
+.searchbar {
+    flex: 0 0 auto; 
+    padding: 10px 20px; 
     border: 1px solid #ccc;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 50px; 
+    font-size: 16px; 
     background-color: #454545;
     border-color: #454545;
     color: #d3d3d3;
     font-weight: bold;
+    width: 400%; 
+}
+
+@@media only screen and (min-width: 768px) {
+    .searchbar {
+        width: auto; 
+    }
+}
+
+
+@@media only screen and (min-width: 992px) {
+    .searchbar {
+        width: auto;
+    }
 }
 
 .search-btn {
-    padding: 6px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    background-color: #454545;
-    border-color: #454545;
-    color: white;
-    font-size: 18px;
-    margin-top: 10px;
-    width: 12%;
-    height: 12%;
     background-color: #226990;
-    border-color: #226990;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    border-radius: 50px;
+    font-family: Arial, sans-serif;
+    width: 100%; 
 }
+
+@@media only screen and (min-width: 768px) {
+    .search-btn {
+        width: auto;
+    }
+}
+
+@@media only screen and (min-width: 992px) {
+    .search-btn {
+        width: auto;
+    }
+}
+
+.viewModalText {
+    color: white;
+}
+
+.viewModalTitle {
+    color: white;
+    font-weight: bold;
+}
+
+.viewModalSeller {
+    color: white;
+    text-decoration: underline;
+}
+
+    .viewModalSeller:hover {
+        cursor: pointer;
+    }
 
 </style>
