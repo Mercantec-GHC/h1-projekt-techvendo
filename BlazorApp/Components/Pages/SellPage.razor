@@ -241,31 +241,24 @@
     }
 </div>
 
-
-
-
-
-
-
-
 @code {
     string product_type;
     bool showInputFields;
-    bool showGPUFields; // Add this variable to control the GPU form
+    bool showGPUFields;                 
     string brand;
     string series;
     string model;
     decimal price;
-    int vram; // Add this variable for the VRAM field
+    int vram;               
     int cores;
     int threads;
     string idle_clock_speed;
     string max_clock_speed;
     string cache;
     string description;
-    string ean_number; // Add this variable for the EAN number field
-    string ports; // Add this variable for the Ports field
-    string size; // Add this variable for the Size field
+    string ean_number;                 
+    string ports;               
+    string size;               
     string successMessage;
     string ramtype;
     int capacity;
@@ -273,9 +266,6 @@
     int seller_id;
     public string ErrorMessage { get; set; }
 
-
-
-  
     enum ProductType
     {
         None,
@@ -299,24 +289,21 @@
 
     void CloseCPUModal()
     {
-    // Clear your form fields here...
-    selectedProductType = ProductType.None;
+        selectedProductType = ProductType.None;
     }
 
     void CloseGPUModal()
     {
-        // Clear your form fields here...
         selectedProductType = ProductType.None;
     }
     void CloseRAMModal()
     {
-        // Clear your form fields here...
         selectedProductType = ProductType.None;
     }
  
     private void SellProduct()
     {
-        string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;"; // Replace with actual connection string
+        string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";                
 
         product_type = selectedProductType.ToString();
 
@@ -394,33 +381,29 @@
             }
 
 
-            // Show success message
-            showInputFields = false; // Hide input fields after success
-            showGPUFields = false; // Hide GPU fields after success
-            successMessage = "Product successfully added!"; // Set a success message variable
+            showInputFields = false;                
+            showGPUFields = false;                
+            successMessage = "Product successfully added!";                
         }
     }
 }
-
-
-
 
 <style>
     .form-grid {
         display: grid;
         color: white;
         grid-template-columns: repeat(4, 1fr);
-        gap: 10px; /* Adjust as needed */
-        background-color: #4d4d4d; /* Adjust as needed */
-        padding: 20px; /* Adjust as needed */
+        gap: 10px;         
+        background-color: #4d4d4d;         
+        padding: 20px;         
         flex-direction: column;
     }
 
     .sell-btn {
         background-color: #226990;
         color: white;
-        border-radius: 10px; /* Adjust as needed */
-        padding: 10px 20px; /* Adjust as needed */
+        border-radius: 10px;         
+        padding: 10px 20px;         
         border: none;
         cursor: pointer;
         text-align: center;
@@ -469,7 +452,5 @@
 .input-after-label {
     display: inline-block;
 }
-
-
 
 </style>
