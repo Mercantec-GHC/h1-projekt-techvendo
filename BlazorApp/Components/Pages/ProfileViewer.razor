@@ -6,9 +6,7 @@
 <div class="grid-container">
     <div class="column1">
         <h1 id="profileName">@CurrentUser.FirstName @CurrentUser.LastName</h1>
-
         <hr id="nameUnderline" />
-
         <div id="descriptionBox">
             <p>@CurrentUser.Description</p>
         </div>
@@ -54,7 +52,6 @@
     <h1 id="sellingTitle">SELLING</h1>
     <div id="selling">
         <br />
-
             @foreach (var product in productList)
             {
                 if (sellingCardsLimit <= 2) //Makes sure it cant show more than 4 items
@@ -74,30 +71,27 @@
                     break;
                 }
             }
-        <br />
-
+            <br />
+        </div>
     </div>
-</div>
-
-
-<div class="column2">
-
-    <button id="chatButton">
-        <p>CHAT</p>
-    </button>
-
-    <button id="reportButton">
-        <p>REPORT</p>
-    </button>
-
-    <h1 id="repTitle">REPUTATION</h1>
-
-    <div>
+    <div class="column2">
+        <div id="profilePictureContainer">
+            <img src="/testprofilepicture.png" id="profilePicture" />
+        </div>
+        <p id="infoText">Joined: @CurrentUser.Joined Location: @CurrentUser.Location</p>
+        <button id="chatButton" class="button">
+            <p>CHAT</p>
+        </button>
+        <button id="reportButton" class="button--report">
+            <p>REPORT</p>
+        </button>
+        <h1 id="repTitle">REPUTATION</h1>
         <div class="star-rating">
-                @for (int i = 1; i <= 5; i++)
-                {
+            @for (int i = 1; i <= 5; i++)
+            {
                 <span style="@(i <= CurrentUser.Reputation ? "color: gold;" : "color: #ccc;")" class="star">&#9733;</span>
-                }
+            }
+
         </div>
     </div>
 </div>
