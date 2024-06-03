@@ -51,7 +51,7 @@
                     <p></p>
                     if (sellingCardsLimit == 3)
                     {
-                        <button id="seeMoreButton">
+                        <button @onclick="RedirectToProducts" id="seeMoreButton">
                             <p>See More</p>
                         </button>
                     }
@@ -166,6 +166,10 @@
                 connection.Close();
             }
         }
+    }
+    private void RedirectToProducts()
+    {
+        NavManager.NavigateTo($"/products");
     }
 
     private void EditDescription()
