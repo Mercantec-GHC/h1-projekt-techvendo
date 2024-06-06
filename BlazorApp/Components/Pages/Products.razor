@@ -200,6 +200,7 @@
 
     private bool showModal = false;
     private bool sortModal = false;
+    private bool redirectingToLoginPage = false;
 
     private ProductClass selectedProduct = new ProductClass();
     private string selectedSortOption = "Price";
@@ -226,17 +227,22 @@
 
     private void NavigateToSellPage()
     {
-        if (LoginInfo.UserLoggedIn == true)
+        if (!redirectingToLoginPage)
+        {
+            if (LoginInfo.UserLoggedIn == true)
         {
             NavigationManager.NavigateTo("/products/sellpage");
         }
         else
         {
             showNotSignedInMessage = true;
-            redirectTimer = new System.Timers.Timer(3000); 
+            redirectTimer = new System.Timers.Timer(1500); 
             redirectTimer.Elapsed += (sender, e) => NavigateToLoginPage();
             redirectTimer.Start();
         }
+        redirectingToLoginPage = true;
+        }
+        
     }
 
     void NavigateToLoginPage()
