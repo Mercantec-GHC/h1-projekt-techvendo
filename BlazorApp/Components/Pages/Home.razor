@@ -1,22 +1,7 @@
 ﻿@page "/"
-
-
-@code {
-    private bool isLoaded = false;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            isLoaded = true;
-            StateHasChanged();
-        }
-    }
-
-    private bool sortDropdown = false;
-    private bool brandDropdown = false;
-}
-
+@using Npgsql
+@using ProductClassLibrary
+@using ProductClassLibrary.Products
 
 <div class="hero-content">
     <h1 class="title-hero @((isLoaded) ? "loaded" : "")">TECHVENDO</h1>
@@ -25,135 +10,51 @@
     <p> </p>
     <p> </p>
 
-
     <NavLink class="products-btn" href="/products">
         Products
     </NavLink>
-
 </div>
+<h1 class="feat-prod">Featured Products</h1>
+<hr style="width: 90%; color: white; margin: auto; height: 0.3rem;" />
+<br />
 
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <h2>Sort By:</h2>
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" @onclick="() => brandDropdown = !brandDropdown">
-                        Select Brand:
-                    </button>
-                    <div class="dropdown-menu @(brandDropdown ? "show" : "")">
-                        <a class="dropdown-item" href="#">Nvidia</a>
-                        <a class="dropdown-item" href="#">MSI</a>
-                        <a class="dropdown-item" href="#">Asus</a>
-                        <a class="dropdown-item" href="#">Pny</a>
-                        <a class="dropdown-item" href="#">Tuf</a>
-                    </div>
-                </div>
-            </div>
+<div class="container">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        @foreach (ProductClass product in products)
+        {
+            <div class="col">
+                <div class="card shadow-sm">
+                    @switch (product.Product_Type)
+                    {
+                        case "GPU":
+                            <img src="..\images\product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" class="card-img-top" alt="Product Image">
+                            break;
 
+                        case "CPU":
+                            <img src="..\images\amdupscale.png" class="card-img-top" alt="Product Image">
+                            break;
 
-            <div class="col-md-9">
-                <div class="header">
-                    <h1>Featured Text</h1>
-                    <input type="search" id="site-search" name="q" placeholder="Search the site...">
-                </div>
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 1</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
+                        case "RAM":
+                            <img src="..\images\gskillram.png" class="card-img-top" alt="Product Image">
+                            break;
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Brand @product.Series</h5>
+                        <p class="card-text">
+                            @product.Brand
+                            @product.Series
+                            @product.Model
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-        </div>
+        }
     </div>
-</section>
+</div>
 
 <section>
     <div class="footer">
@@ -182,6 +83,66 @@
     </div>
 </section>
 
+@code {
+    private List<ProductClass> products = new List<ProductClass>();
+    private bool isLoaded = false;
+
+    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+    private NpgsqlConnection connection;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        connection = new NpgsqlConnection(connectionString);
+        products = GetProducts("SELECT * FROM products ORDER BY RANDOM() LIMIT 6");
+    }
+
+    private bool sortDropdown = false;
+    private bool brandDropdown = false;
+
+    public List<ProductClass> GetProducts(string inputSQL)
+    {
+        products.Clear();
+        try
+        {
+            connection.Open();
+
+            using (NpgsqlCommand command = new NpgsqlCommand(inputSQL, connection))
+            {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var product = new ProductClass
+                            {
+                                Price = (int)reader["price"],
+                                Brand = reader["brand"].ToString(),
+                                Model = reader["model"].ToString(),
+                                Series = reader["series"].ToString(),
+                                Description = reader["description"].ToString(),
+                                Product_Type = reader["product_type"].ToString(),
+                                SellerID = (int)reader["seller_id"]
+                            };
+                        products.Add(product);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        finally
+        {
+            if (connection.State == System.Data.ConnectionState.Open)
+            {
+                connection.Close();
+            }
+        }
+
+        return products;
+    }
+}
+
 <style>
 
     body {
@@ -189,6 +150,11 @@
         padding: 0;
         font-family: Arial, sans-serif;
         background-color: #000;
+    }
+
+    .feat-prod {
+        color: white;
+        text-align: center;
     }
 
     .hero-content {
@@ -205,20 +171,6 @@
         text-align: center;
     }
 
-    @@media (max-width: 768px) {
-        .hero-content {
-            height: 50vh;               
-        }
-
-            .hero-content h1 {
-                font-size: 24px;                 
-            }
-
-            .hero-content p {
-                font-size: 12px;                 
-            }
-    }
-
     .title-hero {
         font-size: 64px;
         font-family: Arial, sans-serif;
@@ -228,9 +180,9 @@
         transition: border 1s ease-in-out;
     }
 
-        .title-hero.loaded {
-            border-color: #698FC0;             
-        }
+    .title-hero.loaded {
+        border-color: #698FC0;             
+    }
 
     .hero-content {
         text-align: center;
@@ -259,11 +211,11 @@
         width: 300px;
     }
 
-        .products-btn:hover {
-            color: #000;
-            background-color: #eee;             
-            transform: translateY(-3px);           
-        }
+    .products-btn:hover {
+        color: #000;
+        background-color: #eee;             
+        transform: translateY(-3px);           
+    }
 
 
     .header {
@@ -273,27 +225,27 @@
         padding : 20px 0;
     }
 
-        .header h1 {
-            margin: 0;
-        }
+    .header h1 {
+        margin: 0;
+    }
 
-        .header input[type="search"] {
-            margin-left: auto;
-            padding: 10px;
-            border: 2px solid white;
-            border-radius: 50px;                 
-            background-color: black;
-            color: white;
-            outline: none;
-        }
+    .header input[type="search"] {
+        margin-left: auto;
+        padding: 10px;
+        border: 2px solid white;
+        border-radius: 50px;                 
+        background-color: black;
+        color: white;
+        outline: none;
+    }
 
-            .header input[type="search"]::placeholder {
-                color: white;
-            }
+    .header input[type="search"]::placeholder {
+        color: white;
+    }
 
-        h2 {
-            color: white;
-        }
+    h2 {
+        color: white;
+    }
 
     .header input[type="search"]::-webkit-search-decoration,
     .header input[type="search"]::-webkit-search-cancel-button,
@@ -314,25 +266,12 @@
         color: white;
         padding: 20px 20px;
         margin-bottom: 20px;
+        border-radius: 10px;
     }
-
 
     .btn, .btn-sm, .btn-outline-secondary {
         color: white;
     }
-
-    .list-group-item {
-        background-color: #525050;
-        color: white;
-    }
-
-    .dropdown-menu {
-        display: none;
-    }
-
-        .dropdown-menu.show {
-            display: block;
-        }
 
     .footer {
         background-color: #2D2D2D;
@@ -340,17 +279,16 @@
         padding: 20px;
     }
 
-        .footer h5 {
-            margin-bottom: 20px;
-        }
+    .footer h5 {
+        margin-bottom: 20px;
+    }
 
-        .footer a {
-            color: #fff;
-            text-decoration: none;
-        }
+    .footer a {
+        color: #fff;
+        text-decoration: none;
+    }
 
-            .footer a:hover {
-                color: #ccc;
-            }
+    .footer a:hover {
+        color: #ccc;
+    }
 </style>
-
