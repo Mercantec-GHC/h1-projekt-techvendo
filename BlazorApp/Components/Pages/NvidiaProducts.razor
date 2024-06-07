@@ -1,0 +1,133 @@
+﻿@page "/products/NVIDIA"
+@using Npgsql
+@using ProductClassLibrary
+@using ProductClassLibrary.Products
+@inject NavigationManager NavigationManager
+@inject LoginState LoginInfo
+@inject LoginService LoginService
+
+<PageTitle>TechVendo</PageTitle>
+
+<img class="nvidia-logo" src="..\images\nvidiaLogo.png"/>
+<body>
+
+<div class="info-container">
+    <h1 class="info-title-1">TECHVENDO | NVIDIA</h1>
+    <hr style="width: 90%; color: white; height: 0.3rem;" />
+    <div class="infoText">
+        <p class="info-text">
+            We're excited to announce that TechVendo has partnered with NVIDIA to bring you incredible deals on gaming graphics cards!
+        </p>
+        <br />
+        <p class="info-text">
+            Enjoy exclusive discounts on the latest NVIDIA GPUs, ensuring the best performance for your gaming rig at unbeatable prices.
+        </p>
+        <br />
+        <p class="info-text">
+            Upgrade or build your setup with the best graphics cards on the market, available now at TechVendo!
+        </p>
+    </div>
+    <br />
+</div>
+
+<div class="graph-image-div">
+        <img class="graph-image" src="../images/GraphBackgroundNvidia.png" />
+</div>
+<div class="benchmark-container">
+    <h1 class="info-title-1">Graphics Card Benchmarks</h1>
+    <hr style="width: 90%; color: white; height: 0.3rem;" />
+    <div class="benchmarkText">
+    </div>
+    <br />
+</div>
+</body>
+
+@code {
+
+}
+
+<style>
+    body {
+        background-image: url(/images/TopBackgroundNvidia.png);
+        height: 100vh;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+.nvidia-logo {
+        display: block;
+        margin-left: 45%;
+        margin-top: 2.5%;
+        width: 50%;
+    }
+
+    .info-container {
+        display: flex;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+        min-height: 0;
+        width: 540px;
+        height: 70%;
+        background-color: #0E0E0E;
+        box-shadow: 0px 5px 30px 60px rgba(0, 0, 0, 0.8);
+        margin-top: 10%;
+        border-radius: 20px;
+        flex-direction: column;
+        max-width: 100%;
+        flex-grow: 1;
+        margin-left: 5%;
+        bottom: 25%;
+    }
+
+    .info-title-1 {
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .info-title-2 {
+        color: #76B900;
+        font-size: 30px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .info-title-1, .info-title-2 {
+        display: inline-block; 
+        margin-right: 10px;
+    }
+
+    .info-text {
+        color: white;
+        font-size: 20px;
+        margin: 10px;
+        padding: 0.5rem;
+    }
+
+    .graph-image-div {
+        position: relative;
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+
+    .benchmark-container {
+        display: flex;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+        min-height: 0;
+        width: 540px;
+        height: 750px;
+        background-color: #0E0E0E;
+        box-shadow: 0px 5px 30px 60px rgba(0, 0, 0, 0.8);
+        border-radius: 20px;
+        flex-direction: column;
+        max-width: 100%;
+        flex-grow: 1;
+        margin-left: 5%;
+    }
+
+
+</style>

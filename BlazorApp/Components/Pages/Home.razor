@@ -1,23 +1,5 @@
 ﻿@page "/"
 
-
-@code {
-    private bool isLoaded = false;
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            isLoaded = true;
-            StateHasChanged();
-        }
-    }
-
-    private bool sortDropdown = false;
-    private bool brandDropdown = false;
-}
-
-
 <div class="hero-content">
     <h1 class="title-hero @((isLoaded) ? "loaded" : "")">TECHVENDO</h1>
     <p> </p>
@@ -29,131 +11,12 @@
     <NavLink class="products-btn" href="/products">
         Products
     </NavLink>
+    <br />
+    <NavLink class="nvidia-products-btn" href="/products/NVIDIA">
+        NVIDIA
+    </NavLink>
 
 </div>
-
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <h2>Sort By:</h2>
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" @onclick="() => brandDropdown = !brandDropdown">
-                        Select Brand:
-                    </button>
-                    <div class="dropdown-menu @(brandDropdown ? "show" : "")">
-                        <a class="dropdown-item" href="#">Nvidia</a>
-                        <a class="dropdown-item" href="#">MSI</a>
-                        <a class="dropdown-item" href="#">Asus</a>
-                        <a class="dropdown-item" href="#">Pny</a>
-                        <a class="dropdown-item" href="#">Tuf</a>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="col-md-9">
-                <div class="header">
-                    <h1>Featured Text</h1>
-                    <input type="search" id="site-search" name="q" placeholder="Search the site...">
-                </div>
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 1</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm">
-                            <img class="bd-placeholder-img card-img-top" src="images/product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Card image cap">
-                            <div class="card-body">
-                                <h5 class="card-title">Product 2</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Price: </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
 
 <section>
     <div class="footer">
@@ -161,7 +24,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <h5><a href="/aboutus">About Us</a></h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod eros in enim cursus, ac rutrum arcu pellentesque.</p>
+                    <p>We are a team of dedicated young entrepreneurs who want to make buying and selling hardware for pc's easier than ever. With TechVendo this dream has become a possibility</p>
                 </div>
                 <div class="col-md-4">
                     <h5>Links</h5>
@@ -181,6 +44,21 @@
         </div>
     </div>
 </section>
+
+
+@code {
+    private bool isLoaded = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isLoaded = true;
+            StateHasChanged();
+        }
+    }
+
+}
 
 <style>
 
@@ -259,10 +137,33 @@
         width: 300px;
     }
 
+    .nvidia-products-btn {
+        background-color: rgba(0, 0, 0, 0.5);
+        border: 2px solid #24B634;
+        font-family: Arial, sans-serif;
+        font-style: italic;
+        font-size: 20px;
+        color: #fff;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        display: inline-block;
+        padding: 15px 30px;
+        border-radius: 20px;
+        width: 300px;
+
+    }
+
         .products-btn:hover {
             color: #000;
             background-color: #eee;             
             transform: translateY(-3px);           
+        }
+
+        .nvidia-products-btn:hover {
+            color: white;
+        background-color: #0A2F0E;
+            transform: translateY(-3px);
         }
 
 
