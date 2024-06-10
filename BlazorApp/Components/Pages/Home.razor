@@ -1,294 +1,158 @@
 ﻿@page "/"
-@using Npgsql
-@using ProductClassLibrary
-@using ProductClassLibrary.Products
+@inject IJSRuntime JSRuntime
+@using BlazorBootstrap;
 
-<div class="hero-content">
-    <h1 class="title-hero @((isLoaded) ? "loaded" : "")">TECHVENDO</h1>
-    <p> </p>
-    <p class="under-hero">We Chop The Prices!</p>
-    <p> </p>
-    <p> </p>
+<body>
+    <h1 class="speed-h1">GO BEYOND SPEED!</h1>
 
-    <NavLink class="products-btn" href="/products">
-        Products
-    </NavLink>
-</div>
-<h1 class="feat-prod">Featured Products</h1>
-<hr style="width: 90%; color: white; margin: auto; height: 0.3rem;" />
-<br />
+    <div id="parallaxElement" style="background-image: url('/images/image-fornvidia.png'); height: 1080px; background-attachment: fixed; background-position: center; background-repeat: no-repeat; background-size: cover;">
+        <h1 class="power-h1">MORE POWER LESS ENERGY!</h1>
 
-<div class="container">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        @foreach (ProductClass product in products)
-        {
-            <div class="col">
-                <div class="card shadow-sm">
-                    @switch (product.Product_Type)
+    </div>
+
+    <section>
+        <div class="less-power">
+            <h1 class="power-h1">LESS POWER CONSUMPTION!</h1>
+
+            <div class="carousel-container" @onwheel="OnScroll">
+                <button class="carousel-button prev" @onclick="PreviousImage">Previous</button>
+                <button class="carousel-button next" @onclick="NextImage">Next</button>
+
+                <div class="carousel">
+                    @for (var i = 0; i < 9; i++)
                     {
-                        case "GPU":
-                            <img src="..\images\product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" class="card-img-top" alt="Product Image">
-                            break;
-
-                        case "CPU":
-                            <img src="..\images\amdupscale.png" class="card-img-top" alt="Product Image">
-                            break;
-
-                        case "RAM":
-                            <img src="..\images\gskillram.png" class="card-img-top" alt="Product Image">
-                            break;
-                    }
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Brand @product.Series</h5>
-                        <p class="card-text">
-                            @product.Brand
-                            @product.Series
-                            @product.Model
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                            </div>
+                        var path = $"/images/paracausell/5th-dimension-{i}.jpg";
+                        <div class="carousel-item @(currentIndex == i ? "active" : "")">
+                            <img src="@path" alt="Image @i" />
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
-        }
-    </div>
-</div>
-
-<section>
-    <div class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5><a href="/aboutus">About Us</a></h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod eros in enim cursus, ac rutrum arcu pellentesque.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Links</h5>
-                    <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/products">Products</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Contact Us</h5>
-                    <p>H.C Andersensvej, Viborg, Denmark</p>
-                    <p>Email: Techvendo69@gmail.com</p>
-                    <p>Phone: +45 93 70 61 51</p>
-                </div>
-            </div>
+            }
         </div>
-    </div>
-</section>
+    </section>
+
+</body>
+
 
 @code {
-    private List<ProductClass> products = new List<ProductClass>();
-    private bool isLoaded = false;
-
-    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
-    private NpgsqlConnection connection;
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        base.OnInitialized();
-        connection = new NpgsqlConnection(connectionString);
-        products = GetProducts("SELECT * FROM products ORDER BY RANDOM() LIMIT 6");
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("parallaxFunctions.setParallax", "parallaxElement", 0.5);
+            // await JSRuntime.InvokeVoidAsync("addScrollWheelListener", "carouselExampleControls");
+
+            
+        }
     }
 
-    private bool sortDropdown = false;
-    private bool brandDropdown = false;
+    private int currentIndex = 0;
+    private bool isScrollEnabled = true;
 
-    public List<ProductClass> GetProducts(string inputSQL)
+
+    private void NextImage()
     {
-        products.Clear();
-        try
-        {
-            connection.Open();
+        currentIndex = (currentIndex + 1) % 9;
+    }
 
-            using (NpgsqlCommand command = new NpgsqlCommand(inputSQL, connection))
+    private void PreviousImage()
+    {
+        currentIndex = (currentIndex - 1 + 9) % 9;
+    }
+
+    private void OnScroll(WheelEventArgs e)
+    {
+        if (isScrollEnabled)
+        {
+            if (e.DeltaY > 0)
             {
-                using (NpgsqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var product = new ProductClass
-                            {
-                                Price = (int)reader["price"],
-                                Brand = reader["brand"].ToString(),
-                                Model = reader["model"].ToString(),
-                                Series = reader["series"].ToString(),
-                                Description = reader["description"].ToString(),
-                                Product_Type = reader["product_type"].ToString(),
-                                SellerID = (int)reader["seller_id"]
-                            };
-                        products.Add(product);
-                    }
-                }
+                NextImage();
+            }
+            else
+            {
+                PreviousImage();
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-        }
-        finally
-        {
-            if (connection.State == System.Data.ConnectionState.Open)
-            {
-                connection.Close();
-            }
-        }
+    }
 
-        return products;
+    private void ToggleScroll()
+    {
+        isScrollEnabled = !isScrollEnabled;
     }
 }
 
+
+
+
+
 <style>
-
     body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        background-color: #000;
+        background-color: black
     }
 
-    .feat-prod {
+    .speed-h1 {
         color: white;
         text-align: center;
-    }
-
-    .hero-content {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/1513848341442.jpg');
-        background-size: cover;
-        background-position: center;
-        position: relative;
-        display: flex;
-        align-items: center;
-        height: 100vh;
-        justify-content: center;
-        color: white;
-        flex-direction: column;         
-        text-align: center;
-    }
-
-    .title-hero {
-        font-size: 64px;
-        font-family: Arial, sans-serif;
-        padding: 10px 20px;
-        font-weight: bold;
-        border: 4px solid transparent;
-        transition: border 1s ease-in-out;
-    }
-
-    .title-hero.loaded {
-        border-color: #698FC0;             
-    }
-
-    .hero-content {
-        text-align: center;
-    }
-
-    .under-hero {
-        font-size: 40px;
-        margin-top: 0;
-        padding-top: 0;
+        margin-top: 100px;
+        font-size: 100px;
         font-weight: bold;
     }
 
-    .products-btn {
-        background-color: rgba(0, 0, 0, 0.5);       
-        border: 2px solid #fff;         
-        font-family: Arial, sans-serif;         
-        font-style: italic;         
-        font-size: 20px;         
-        color: #fff;         
-        text-decoration: none;           
-        cursor: pointer;         
-        transition: all 0.2s ease-in-out;           
-        display: inline-block;           
-        padding: 15px 30px;         
-        border-radius: 20px;         
-        width: 300px;
-    }
 
-    .products-btn:hover {
-        color: #000;
-        background-color: #eee;             
-        transform: translateY(-3px);           
+    #parallaxElement {
+        opacity: 0;
     }
 
 
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding : 20px 0;
-    }
-
-    .header h1 {
-        margin: 0;
-    }
-
-    .header input[type="search"] {
-        margin-left: auto;
-        padding: 10px;
-        border: 2px solid white;
-        border-radius: 50px;                 
-        background-color: black;
+    .power-h1 {
         color: white;
-        outline: none;
+        text-align: center;
+        margin-top: 100px;
+        font-size: 100px;
+        font-weight: bold;
     }
 
-    .header input[type="search"]::placeholder {
-        color: white;
-    }
-
-    h2 {
-        color: white;
-    }
-
-    .header input[type="search"]::-webkit-search-decoration,
-    .header input[type="search"]::-webkit-search-cancel-button,
-    .header input[type="search"]::-webkit-search-results-button,
-    .header input[type="search"]::-webkit-search-results-decoration {
-        display: none;
-    }
-
-    .header input[type="search"]::-moz-search-decoration,
-    .header input[type="search"]::-moz-search-cancel-button,
-    .header input[type="search"]::-moz-search-results-button,
-    .header input[type="search"]::-moz-search-results-decoration {
-        display: none;
-    }
-
-    .card-body, .card  {
-        background-color: #525050;
-        color: white;
-        padding: 20px 20px;
-        margin-bottom: 20px;
-        border-radius: 10px;
-    }
-
-    .btn, .btn-sm, .btn-outline-secondary {
-        color: white;
-    }
-
-    .footer {
-        background-color: #2D2D2D;
-        color: #fff;
-        padding: 20px;
-    }
-
-    .footer h5 {
-        margin-bottom: 20px;
-    }
-
-    .footer a {
-        color: #fff;
-        text-decoration: none;
-    }
-
-    .footer a:hover {
-        color: #ccc;
-    }
 </style>
+
+<script>
+
+    window.parallaxFunctions = {
+        setParallax: function (element, speed) {
+            const parallaxElement = document.getElementById(element);
+            const textElement = document.querySelector('.speed-h1');
+            window.addEventListener('scroll', function () {
+                let offset = window.pageYOffset;
+                let height = parallaxElement.offsetHeight;
+                let opacity;
+                if (offset <= height / 2) {
+                    // Increase opacity until the middle of the image
+                    opacity = Math.min(offset / (height / 2), 1);
+                } else {
+                    // Decrease opacity after the middle of the image
+                    opacity = Math.max(1 - (offset - height / 2) / (height / 2), 0);
+                }
+                parallaxElement.style.backgroundPositionY = (offset * speed) + 'px';
+                parallaxElement.style.opacity = opacity;
+                textElement.style.fontSize = Math.max(100 - offset / 10, 20) + 'px'; // Change '10' to control the speed of size decrease
+            });
+        }
+    }
+
+
+    window.addScrollWheelListener = function (carouselId) {
+        var carouselElement = document.getElementById(carouselId);
+        carouselElement.addEventListener('wheel', function (e) {
+            if (e.deltaY < 0) {
+                carouselElement.carousel('prev');
+            }
+            else {
+                carouselElement.carousel('next');
+            }
+        });
+    };
+
+
+
+
+</script>
