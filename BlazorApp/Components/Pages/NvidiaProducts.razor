@@ -7,16 +7,60 @@
 @inject LoginService LoginService
 
 <PageTitle>TechVendo</PageTitle>
+<div class="top-nvidia-div">
+    <img class="top-nvidia-image" src="../images/TopBackgroundNvidia.png" />
+</div>
+
+@if (showModal)
+{
+    <div class="modal-overlay">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@selectedProduct.Brand @selectedProduct.Series @selectedProduct.Model</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal">×</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="modal-section">
+                        <h6>Ports:</h6>
+                        <p>@selectedProduct.Ports</p>
+                    </div>
+                    <div class="modal-section">
+                        <h6>VRAM:</h6>
+                        <p>@selectedProduct.VRAM GB</p>
+                    </div>
+                    <div class="modal-section">
+                        <h6>Seller:</h6>
+                        <p style="text-decoration: underline;"><a @onclick="() => NavigateToSeller(selectedProduct.SellerID)">@GetSellerName(selectedProduct.SellerID)</a></p>
+                    </div>
+                    <div class="modal-section">
+                        <h6>Description:</h6>
+                        <p>@selectedProduct.Description</p>
+                    </div>
+                    <div class="modal-section">
+                        <h6>Price:</h6>
+                        <p>$@selectedProduct.Price</p>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 <img class="nvidia-logo" src="..\images\nvidiaLogo.png"/>
 <body>
 
 <div class="info-container">
-    <h1 class="info-title-1">TECHVENDO | NVIDIA</h1>
+        <h1 class="info-title-1">TECHVENDO | <span style="color: #76B900; ">NVIDIA</span></h1>
     <hr style="width: 90%; color: white; height: 0.3rem;" />
     <div class="infoText">
         <p class="info-text">
-            We're excited to announce that TechVendo has partnered with NVIDIA to bring you incredible deals on gaming graphics cards!
+            We're excited to announce that TechVendo has partnered with NVIDIA to bring you incredible deals on high end gaming graphics cards!
         </p>
         <br />
         <p class="info-text">
@@ -34,27 +78,193 @@
         <img class="graph-image" src="../images/GraphBackgroundNvidia.png" />
 </div>
 <div class="benchmark-container">
-    <h1 class="info-title-1">Graphics Card Benchmarks</h1>
+    <h1 class="benchmark-title-1">Graphics Card Benchmarks</h1>
     <hr style="width: 90%; color: white; height: 0.3rem;" />
-    <div class="benchmarkText">
-    </div>
+        <div class="benchmarkGraphs">
+            <div class="grey-square">
+                <div class="chart-container">
+                    <img class="benchmark-image" src="../images/gpubenchmarks.png"/>
+                </div>
+            </div>
+        </div>
     <br />
 </div>
+
+    <div class="featured-products">
+        <img class="feat-nvidia-logo" src="../images/nvidiaLogo.png" />
+        <h1 class="feat-title1">PRODUCTS</h1>
+        <button class="sort-cheapest-btn" @onclick="SortByPrice">Sort By Price</button>
+        <div class="product-card-container">
+            @foreach (ProductClass product in products)
+            {
+                <div class="product-card">
+                    <img src="..\images\product_16485448943db4ee0d12937fc435d5b5221c968702_grande.webp" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Model</h5>
+                        <p class="card-text">
+                            @product.Brand<br>
+                            @product.Series<br>
+                            @product.Model
+                        </p>
+                        <div class="btn-group">
+                            <button type="button" style="font-weight: bold;" class="btn view-btn" @onclick="() => OpenModal(product)">View</button>
+                            <button type="button" style="font-weight: bold;" class="btn price-btn">Price: @product.Price $</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
 </body>
 
 @code {
+    private List<ProductClass> products = new List<ProductClass>();
+    private ProductClass selectedProduct = new ProductClass();
+    private List<ProductClass> sortedProducts = new List<ProductClass>();
+    private bool showModal = false;
+    private bool sorted = false;
+
+
+    private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
+    private NpgsqlConnection connection;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        connection = new NpgsqlConnection(connectionString);
+        products = GetProducts("SELECT * FROM products WHERE seller_id = 36 ORDER BY RANDOM() LIMIT 8;");
+    }
+
+    void SortByPrice()
+    {
+        if (!sorted)
+        {
+            products.Clear();
+            products = GetProducts("SELECT * FROM products WHERE seller_id = 36 ORDER BY price ASC;");
+            sorted = true;
+        } 
+        else
+        {
+            products.Clear();
+            products = GetProducts("SELECT * FROM products WHERE seller_id = 36 ORDER BY RANDOM() LIMIT 8;");
+            sorted = false;
+        }
+       
+    }
+
+    void OpenModal(ProductClass product)
+    {
+        selectedProduct = product;
+        showModal = true;
+    }
+
+    void CloseModal()
+    {
+        showModal = false;
+    }
+
+    void NavigateToSeller(int sellerId)
+    {
+        NavigationManager.NavigateTo($"/profileviewer/{sellerId}");
+    }
+
+    public List<ProductClass> GetProducts(string inputSQL)
+    {
+        products.Clear();
+        try
+        {
+            connection.Open();
+
+            using (NpgsqlCommand command = new NpgsqlCommand(inputSQL, connection))
+            {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var product = new ProductClass
+                            {
+                                Price = (int)reader["price"],
+                                Brand = reader["brand"].ToString(),
+                                Model = reader["model"].ToString(),
+                                Series = reader["series"].ToString(),
+                                Description = reader["description"].ToString(),
+                                Ports = reader["ports"].ToString(),
+                                SellerID = (int)reader["seller_id"],
+                                VRAM = (int)reader["vram"]
+                            };
+                        products.Add(product);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        finally
+        {
+            if (connection.State == System.Data.ConnectionState.Open)
+            {
+                connection.Close();
+            }
+        }
+
+        return products;
+    }
+
+    public string GetSellerName(int sellerId)
+    {
+        string fullName = "";
+
+        try
+        {
+            connection.Open();
+            string SelectSQL = $"SELECT * FROM userprofiles WHERE id = {sellerId}";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(SelectSQL, connection))
+            {
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        fullName = $"{(string)reader["firstname"]} {(string)reader["lastname"]}";
+                    }
+                }
+            }
+        }
+        finally
+        {
+            if (connection.State == System.Data.ConnectionState.Open)
+            {
+                connection.Close();
+            }
+        }
+        return fullName;
+    }
 
 }
 
 <style>
     body {
-        background-image: url(/images/TopBackgroundNvidia.png);
         height: 100vh;
         background-repeat: no-repeat;
         background-size: cover;
+        background-color: black;
+    }
+    
+    .top-nvidia-div {
+        position: relative;
+        height: 12.5%;
+        width: 100%;
+    }
+   
+    .top-nvidia-image {
+        height: 100vh;
+        width: 100%;
     }
 
-.nvidia-logo {
+    .nvidia-logo {
         display: block;
         margin-left: 45%;
         margin-top: 2.5%;
@@ -77,7 +287,7 @@
         max-width: 100%;
         flex-grow: 1;
         margin-left: 5%;
-        bottom: 25%;
+        bottom: 40%;
     }
 
     .info-title-1 {
@@ -85,18 +295,6 @@
         font-size: 30px;
         font-weight: bold;
         margin-top: 10px;
-    }
-
-    .info-title-2 {
-        color: #76B900;
-        font-size: 30px;
-        font-weight: bold;
-        margin-top: 10px;
-    }
-
-    .info-title-1, .info-title-2 {
-        display: inline-block; 
-        margin-right: 10px;
     }
 
     .info-text {
@@ -108,7 +306,7 @@
 
     .graph-image-div {
         position: relative;
-        height: 10px;
+        height: 12.5%;
         width: 100%;
     }
 
@@ -120,19 +318,283 @@
     .benchmark-container {
         display: flex;
         position: relative;
-        justify-content: center;
-        align-items: center;
+        padding: 1.5%;
         min-height: 0;
-        width: 540px;
-        height: 750px;
+        width: 80%;
+        height: 80%;
         background-color: #0E0E0E;
         box-shadow: 0px 5px 30px 60px rgba(0, 0, 0, 0.8);
         border-radius: 20px;
         flex-direction: column;
         max-width: 100%;
         flex-grow: 1;
-        margin-left: 5%;
+        margin-left: auto;
+        margin-right: auto;
     }
 
+    .benchmark-title-1 {
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
 
+    .grey-square {
+        width: 100%;
+        height: 500px;
+        background-color: #1d1d1d;
+        padding: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .benchmark-image {
+        width: 100%;
+        height: 80%;
+        margin-top: 6%;
+    }
+
+    .featured-products {
+        display: flex;
+        position: relative;
+        padding: 1.5%;
+        min-height: 0;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        box-shadow: 0px 5px 30px 60px rgba(0, 0, 0, 0.8);
+        border-radius: 20px;
+        flex-direction: column;
+        max-width: 100%;
+        flex-grow: 1;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10%;
+        align-items: center;
+    }
+
+.feat-title1 {
+        color: white;
+        font-size: 55px;
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        margin-top: 2%;
+    }
+
+    .feat-nvidia-logo {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .product-card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .product-card {
+        background-color: #1e1e1e;
+        color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        width: 300px;
+        margin: 0.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border: 1px solid #76B900;
+        transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        border: 1px solid #76B900;
+        position: relative;
+        opacity: 1;
+    }
+
+        .product-card img {
+            width: 100%;    
+            height: auto;
+        }
+
+        .product-card .card-body {
+            padding: 1rem;
+        }
+
+        .product-card .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-card .card-text {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-card .btn-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .product-card .btn {
+            background-color: #76B900;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+            .product-card .btn:hover {
+                background-color: #76B900;
+            }
+
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+
+    .viewModalTitle, .viewModalText, .viewModalSeller {
+        color: white;
+    }
+
+    .viewModalText, .viewModalSeller {
+        margin: 0.5rem 0;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .modal-overlay {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+    }
+
+    .modal-dialog {
+        width: 90%;
+        max-width: 600px;
+        background-color: #2c2c2c;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+    }
+
+    .modal-content {
+        color: white;
+        padding: 2rem;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #444;
+        padding-bottom: 1rem;
+    }
+
+    .modal-title {
+        font-size: 1.8rem;
+        margin: 0;
+        color: #76b900;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+        .btn-close:hover {
+            color: #76b900;
+        }
+
+    .modal-body {
+        margin-top: 1rem;
+    }
+
+    .modal-section {
+        margin-bottom: 1.5rem;
+    }
+
+        .modal-section h6 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #76b900;
+        }
+
+        .modal-section p {
+            margin: 0;
+            font-size: 1rem;
+            color: #ddd;
+        }
+
+        .modal-section a {
+            color: #76b900;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+            .modal-section a:hover {
+                text-decoration: underline;
+            }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 1rem;
+        border-top: 1px solid #444;
+    }
+
+    .btn-secondary {
+        background-color: #76b900;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a8e00;
+            transform: scale(1.05);
+        }
+
+    .sort-cheapest-btn {
+        background-color: #76b900;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        margin-right: 82%;
+        transition: transform 0.3s;
+    }
+
+        .sort-cheapest-btn:hover {
+            background-color: #5a8e00;
+            transform: scale(1.05);
+        }
 </style>

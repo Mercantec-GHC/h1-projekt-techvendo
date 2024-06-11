@@ -20,6 +20,6 @@ namespace ProductClassLibrary
         public int Threads { get; set; }
         public int Capacity { get; set; }
         public int RamSpeed { get; set; }
-
+        public bool IsMoving { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace BlazorApp
             builder.Services.AddScoped<LoginService>();
             builder.Services.AddSingleton<LoginState>();
             builder.Services.AddScoped<NavMenu>();
+            builder.Services.AddBlazorBootstrap();
 
             var app = builder.Build();
 
