@@ -2,14 +2,15 @@
 @using Npgsql
 @using ProductClassLibrary
 @using ProductClassLibrary.Products
+@inject IJSRuntime JS
 @inject NavigationManager NavigationManager
-@inject LoginState LoginInfo
-@inject LoginService LoginService
 
 <PageTitle>TechVendo</PageTitle>
 <div class="top-nvidia-div">
     <img class="top-nvidia-image" src="../images/TopBackgroundNvidia.png" />
 </div>
+
+
 
 @if (showModal)
 {
@@ -83,7 +84,15 @@
         <div class="benchmarkGraphs">
             <div class="grey-square">
                 <div class="chart-container">
-                    <img class="benchmark-image" src="../images/gpubenchmarks.png"/>
+
+                    <button class="bar-btn" @onclick="GenerateBars">Generate Bars</button>
+             
+                    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+                    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+                    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+                    <script src="../js/generatebars.js"></script>
+
+                    <div id="chartdiv"></div>
                 </div>
             </div>
         </div>
@@ -124,6 +133,7 @@
     private List<ProductClass> sortedProducts = new List<ProductClass>();
     private bool showModal = false;
     private bool sorted = false;
+    private bool barsGenerated = false;
 
 
     private string connectionString = "Host=ep-purple-star-a20n8auz.eu-central-1.aws.neon.tech;Port=5432;Username=techvendo69;Password=qVyZgOJ36HtK;Database=TechVendo;SslMode=Require;";
@@ -134,6 +144,20 @@
         base.OnInitialized();
         connection = new NpgsqlConnection(connectionString);
         products = GetProducts("SELECT * FROM products WHERE seller_id = 36 ORDER BY RANDOM() LIMIT 8;");
+    }
+
+    private async Task GenerateBars()
+    {
+        if (!barsGenerated)
+        {
+            await JS.InvokeVoidAsync("GenerateBars");
+            barsGenerated = true;
+        }
+        else
+        {
+            return;
+        }
+
     }
 
     void SortByPrice()
@@ -252,7 +276,21 @@
         background-size: cover;
         background-color: black;
     }
-    
+
+    .bar-btn {
+        background-color: #76b900;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 2%;
+    }
+
+    #chartdiv {
+        width: 100%;
+        height: 600px;
+    }
     .top-nvidia-div {
         position: relative;
         height: 12.5%;
@@ -349,8 +387,6 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
-        justify-content: center;
-        align-items: center;
     }
 
     .benchmark-image {
